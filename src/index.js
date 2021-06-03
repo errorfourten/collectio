@@ -1,11 +1,13 @@
+import common from '@util/common'
+
+const { PORT, inProduction } = common
+
 require('dotenv').config()
 require('module-alias/register')
 const chokidar = require('chokidar')
 const express = require('express')
 const path = require('path')
 require('express-async-errors')
-
-const { PORT, inProduction } = require('@util/common')
 
 const app = express()
 

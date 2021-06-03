@@ -1,9 +1,8 @@
-const Router = require('express')
+import Router from 'express'
+import datasetsController from '@controllers/datasets'
 
 const router = Router()
 
-router.get('/ping', (_req: any, res: { send: (arg0: string) => void }) => {
-  res.send('pong')
-})
+router.get('/datasets', datasetsController.getAll)
 
 export default router
