@@ -1,0 +1,40 @@
+{
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "compilerOptions": {
+    "target": "ES5",
+    "module": "ES6",
+    "allowJs": true,
+    "jsx": "react",
+    "outDir": "./build/",
+    "rootDir": "src",
+
+    "strict": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@controllers/*": ["server/controllers/*"],
+      "@middleware/*": ["server/middleware/*"],
+      "@util/*": ["server/util/*"],
+      "Utilities/*": ["client/util/*"],
+      "Components/*": ["client/components/*"],
+      "Assets/*": ["client/assets/*"],
+      "@root/*": ["*"],
+    },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
