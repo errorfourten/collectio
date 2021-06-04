@@ -24,6 +24,7 @@ module.exports = (env, argv) => {
         Utilities: path.resolve(__dirname, 'client/util/'),
         Components: path.resolve(__dirname, 'client/components/'),
         Assets: path.resolve(__dirname, 'client/assets/'),
+        Types: path.resolve(__dirname, 'config/types'),
         '@root': path.resolve(__dirname)
       },
       extensions: ['.js', '.ts', '.tsx']
@@ -45,6 +46,13 @@ module.exports = (env, argv) => {
           use: [
             'babel-loader',
             'ts-loader'
+          ]
+        },
+        {
+          test: /\.css$/i,
+          use: [
+            'style-loader',
+            'css-loader'
           ]
         },
         {

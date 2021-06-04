@@ -20,6 +20,15 @@
       "error",
       {"devDependencies": true}
     ],
+    "import/extensions": [
+      "error",
+      {
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
     "react/jsx-filename-extension": "off",
     "react/prop-types": [
       1,
@@ -28,6 +37,7 @@
     "@typescript-eslint/no-var-requires": "off",
     "no-use-before-define": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off"
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "import/prefer-default-export": "off"
   }
 }

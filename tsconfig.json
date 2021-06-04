@@ -27,6 +27,7 @@
       "Utilities/*": ["client/util/*"],
       "Components/*": ["client/components/*"],
       "Assets/*": ["client/assets/*"],
+      "Types": ["config/types"],
       "@root/*": ["*"],
     },
     "allowSyntheticDefaultImports": true,
