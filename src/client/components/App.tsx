@@ -6,7 +6,7 @@ const App = () => {
   console.log('nah')
 
   return (
-    <Container>
+    <Container style={{ margin: '30px' }}>
       <h1>collectio</h1>
       <DatasetsView />
     </Container>

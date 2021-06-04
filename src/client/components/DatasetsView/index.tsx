@@ -2,12 +2,17 @@ import React from 'react'
 import { useQuery } from 'react-query'
 import { getDatasets } from 'Utilities/services/dataset'
 import { Dataset } from 'Types'
-import { Segment } from 'semantic-ui-react'
+import { Container, Segment } from 'semantic-ui-react'
+
+import DatasetModal from './DatasetModal'
 
 const DatasetCard = ({ dataset }: {dataset: Dataset}) => (
-  <Segment>
+  <Segment clearing>
     <h2>{dataset.name}</h2>
-    <i>{dataset.project}</i>
+    <div>
+      <i>{dataset.project}</i>
+      <DatasetModal dataset={dataset} />
+    </div>
   </Segment>
 )
 
@@ -19,11 +24,11 @@ const DatasetsView = () => {
   }
 
   return (
-    <div>
+    <Container text>
       {datasets.data?.map((dataset) => (
         <DatasetCard key={dataset.id} dataset={dataset} />
       ))}
-    </div>
+    </Container>
   )
 }
 
