@@ -5,17 +5,16 @@ import { Dataset } from 'Types'
 const DatasetAttributes = ({ attributes }: {attributes: Dataset['attributes']}) => {
   if (!attributes) { return null }
 
-  const attributeHeaders = Object.keys(attributes)
   return (
     <ul>
-      {attributeHeaders.map((header) => (
-        <li key={header}>
+      {attributes.map((attribute) => (
+        <li key={attribute.name}>
           <>
-            {header}
+            {attribute.name}
             <ul>
               {
-                Object.keys(attributes[header]).map((name) => (
-                  <li key={name}>{name}</li>
+                attribute.options.map((option) => (
+                  <li key={option.name}>{option.name}: {option.quantity}</li>
                 ))
               }
             </ul>

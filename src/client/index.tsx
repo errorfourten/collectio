@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 import 'Assets/custom.scss'
-import 'semantic-ui-css/semantic.min.css'
+import 'fomantic-ui-css/semantic.min.css'
 import App from 'Components/App'
 
 const queryClient = new QueryClient()

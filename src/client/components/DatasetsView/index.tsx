@@ -5,6 +5,7 @@ import { Dataset } from 'Types'
 import { Container, Segment } from 'semantic-ui-react'
 
 import DatasetModal from './DatasetModal'
+import AddDatasetFormModal from './AddDatasetFormModal'
 
 const DatasetCard = ({ dataset }: {dataset: Dataset}) => (
   <Segment clearing>
@@ -25,6 +26,7 @@ const DatasetsView = () => {
 
   return (
     <Container text>
+      <AddDatasetFormModal />
       {datasets.data?.map((dataset) => (
         <DatasetCard key={dataset.id} dataset={dataset} />
       ))}
