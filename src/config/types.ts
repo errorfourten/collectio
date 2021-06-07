@@ -21,7 +21,7 @@ export interface Dataset {
   id: string,
   name: string,
   dateCreated: Date,
-  project: string,
+  project?: string,
   attributes?: Attribute[]
 }
 
