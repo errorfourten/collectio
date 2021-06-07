@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Modal, Button, Header } from 'semantic-ui-react'
-import { Dataset } from 'Types'
+import { Dataset } from 'Utilities/types'
 
 const DatasetAttributes = ({ attributes }: {attributes: Dataset['attributes']}) => {
   if (!attributes) { return null }

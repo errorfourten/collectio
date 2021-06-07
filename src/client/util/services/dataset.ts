@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Dataset, DatasetRawData } from 'Types'
+import { Dataset, DatasetRawData } from 'Utilities/types'
 
 const basePath = '/api/datasets'
 

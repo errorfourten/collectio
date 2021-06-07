@@ -1,6 +1,6 @@
 import {
   Attribute, DatasetRawData, DatasetRawDataForm, Option
-} from 'Types'
+} from 'Utilities/types'
 
 const processFormData = (formData: DatasetRawDataForm): DatasetRawData => {
   // Takes in form data with IDs in attributes and options and removes them

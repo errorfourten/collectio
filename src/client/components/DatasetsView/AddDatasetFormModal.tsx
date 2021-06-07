@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import {
   Dataset, OptionWithId, AttributeWithId, DatasetRawDataForm
-} from 'Types'
+} from 'Utilities/types'
 import { postDataset } from 'Utilities/services/dataset'
 import { useQueryClient, useMutation } from 'react-query'
 import util from './util'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useQuery } from 'react-query'
 import { getDatasets } from 'Utilities/services/dataset'
-import { Dataset } from 'Types'
+import { Dataset } from 'Utilities/types'
 import { Container, Segment } from 'semantic-ui-react'
 
 import DatasetModal from './DatasetModal'
