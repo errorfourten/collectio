@@ -20,7 +20,7 @@ export interface AttributeWithId extends Attribute {
 export interface Dataset {
   id: string,
   name: string,
-  dateCreated: Date,
+  dateCreated: string,
   project?: string,
   attributes?: Attribute[]
 }

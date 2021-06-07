@@ -18,16 +18,15 @@ const DatasetCard = ({ dataset }: {dataset: Dataset}) => (
 )
 
 const DatasetsView = () => {
-  const datasets = useQuery<[Dataset], Error>('datasets', getDatasets)
-
-  if (!datasets) {
-    return null
-  }
+  const datasetsQuery = useQuery<[Dataset], Error>('datasets', getDatasets)
+  if (!datasetsQuery.data) {return null}
+  const sortedDatasets = datasetsQuery.data.sort((a, b) => a.dateCreated.localeCompare(b.dateCreated))
+  console.log(sortedDatasets)
 
   return (
     <Container text>
       <AddDatasetFormModal />
-      {datasets.data?.map((dataset) => (
+      {sortedDatasets.map((dataset) => (
         <DatasetCard key={dataset.id} dataset={dataset} />
       ))}
     </Container>
