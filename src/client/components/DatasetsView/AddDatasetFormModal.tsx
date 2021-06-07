@@ -3,6 +3,10 @@ import {
   Modal, Button, Header, Form, Segment
 } from 'semantic-ui-react'
 import { OptionWithId, AttributeWithId, DatasetRawDataForm } from 'Types'
+import util from './util'
+import { postDataset } from 'Utilities/services/dataset'
+import { useQueryClient, useMutation } from 'react-query'
+import { Dataset } from '@util/types'
 
 type AttributesProps = {
   formData: DatasetRawDataForm,
@@ -167,6 +171,7 @@ const Attributes = ({ formData, setFormData }: AttributesProps) => {
 }
 
 const AddDatasetFormModal = () => {
+  const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [formData, setFormData] = useState<DatasetRawDataForm>({
     name: '',
@@ -174,10 +179,21 @@ const AddDatasetFormModal = () => {
     attributes: []
   })
 
+  const mutation = useMutation(postDataset, {
+    onSuccess: (data) => {
+      queryClient.setQueryData<Dataset[]>('datasets', (oldData) => {
+        if (oldData) {return [...oldData, data]} 
+        else {return [data]}
+      })
+    }
+  })
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    console.log(formData)
-    // submit form data...
+    
+    const cleanData = util.processFormData(formData)
+    mutation.mutate(cleanData)
+
     setFormData({
       name: '',
       project: '',
