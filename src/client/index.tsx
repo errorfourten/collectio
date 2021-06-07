@@ -3,7 +3,7 @@ import { render } from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import 'Assets/custom.scss'
+import './assets/custom.scss'
 import 'fomantic-ui-css/semantic.min.css'
 import App from 'Components/App'
 

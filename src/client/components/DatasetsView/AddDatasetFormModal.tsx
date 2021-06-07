@@ -2,11 +2,12 @@ import React, { useState, MouseEvent, FormEvent } from 'react'
 import {
   Modal, Button, Header, Form, Segment
 } from 'semantic-ui-react'
-import { OptionWithId, AttributeWithId, DatasetRawDataForm } from 'Types'
-import util from './util'
+import {
+  Dataset, OptionWithId, AttributeWithId, DatasetRawDataForm
+} from 'Types'
 import { postDataset } from 'Utilities/services/dataset'
 import { useQueryClient, useMutation } from 'react-query'
-import { Dataset } from '@util/types'
+import util from './util'
 
 type AttributesProps = {
   formData: DatasetRawDataForm,
@@ -28,19 +29,19 @@ type OptionProps = {
 
 const Option = ({ option, handleRemoveOption, handleOptionChange }: OptionProps) => {
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newOption: OptionWithId = {...option, name: e.target.value}
+    const newOption: OptionWithId = { ...option, name: e.target.value }
     handleOptionChange(newOption)
   }
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newOption: OptionWithId = {...option, quantity: Number(e.target.value)}
+    const newOption: OptionWithId = { ...option, quantity: Number(e.target.value) }
     handleOptionChange(newOption)
   }
 
   return (
     <Form.Group key={option.id}>
-      <Form.Input width={7} placeholder="Option" onChange={handleNameChange}/>
-      <Form.Input type="number" width={5} placeholder="Quantity" onChange={handleQuantityChange}/>
+      <Form.Input width={7} placeholder="Option" onChange={handleNameChange} />
+      <Form.Input type="number" width={5} placeholder="Quantity" onChange={handleQuantityChange} />
       {/* This ensures that first option cannot be deleted */}
       {
         option.id.split('-')[1] !== '0'
@@ -63,9 +64,9 @@ const Attribute = ({
   }
 
   const changeOptionsInFormData = (newOptions: OptionWithId[]) => {
-    const newAttribute: AttributeWithId = {...attribute, options: newOptions}
-    const newAttributes = formData.attributes.map((a) => a.id === newAttribute.id ? newAttribute : a)
-    const newFormData = {...formData, attributes: newAttributes}
+    const newAttribute: AttributeWithId = { ...attribute, options: newOptions }
+    const newAttributes = formData.attributes.map((a) => (a.id === newAttribute.id ? newAttribute : a))
+    const newFormData = { ...formData, attributes: newAttributes }
     setFormData(newFormData)
   }
 
@@ -76,7 +77,7 @@ const Attribute = ({
       name: '',
       quantity: 0
     }
-    
+
     const newOptions: OptionWithId[] = [...attribute.options, newOption]
     changeOptionsInFormData(newOptions)
   }
@@ -87,7 +88,7 @@ const Attribute = ({
   }
 
   const handleChangeOption = (newOption: OptionWithId) => {
-    const newOptions = attribute.options.map((o) => o.id === newOption.id ? newOption : o)
+    const newOptions = attribute.options.map((o) => (o.id === newOption.id ? newOption : o))
     changeOptionsInFormData(newOptions)
   }
 
@@ -103,18 +104,19 @@ const Attribute = ({
           <Form.Button negative icon="close" onClick={() => handleRemoveAttribute(attribute.id)} />
         </Form.Group>
         <Segment>
-        <Header as="h4">Options</Header>
-        {
+          <Header as="h4">Options</Header>
+          {
           attribute.options.map((option) => (
             <Option
+              key={option.id}
               option={option}
               handleRemoveOption={handleRemoveOption}
               handleOptionChange={handleChangeOption}
             />
           ))
         }
-        <Form.Button onClick={handleAddOption}>Add Option</Form.Button>
-      </Segment>
+          <Form.Button onClick={handleAddOption}>Add Option</Form.Button>
+        </Segment>
       </Segment>
     </>
   )
@@ -147,7 +149,7 @@ const Attributes = ({ formData, setFormData }: AttributesProps) => {
   }
 
   const handleRemoveAttribute = (id: number) => {
-    if (!formData.attributes) {return}
+    if (!formData.attributes) { return }
     const attributes = formData.attributes.filter((a) => a.id !== id)
     setFormData({ ...formData, attributes })
   }
@@ -182,15 +184,15 @@ const AddDatasetFormModal = () => {
   const mutation = useMutation(postDataset, {
     onSuccess: (data) => {
       queryClient.setQueryData<Dataset[]>('datasets', (oldData) => {
-        if (oldData) {return [...oldData, data]} 
-        else {return [data]}
+        if (oldData) { return [...oldData, data] }
+        return [data]
       })
     }
   })
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    
+
     const cleanData = util.processFormData(formData)
     mutation.mutate(cleanData)
 

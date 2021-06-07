@@ -1,7 +1,7 @@
 import { Dataset, DatasetRawData } from '@util/types'
 import { RequestHandler } from 'express'
-import utils from './utils'
 import { v4 as uuid } from 'uuid'
+import utils from './utils'
 
 const datasets: Array<Dataset> = [
   {
@@ -11,30 +11,30 @@ const datasets: Array<Dataset> = [
     project: 'basic',
     attributes: [
       {
-        name: "size",
+        name: 'size',
         options: [
           {
-            name: "small",
+            name: 'small',
             quantity: 20
           },
           {
-            name: "medium",
+            name: 'medium',
             quantity: 60
           },
           {
-            name: "large",
+            name: 'large',
             quantity: 20
           }
         ]
       }, {
-        name: "direction",
+        name: 'direction',
         options: [
           {
-            name: "left",
+            name: 'left',
             quantity: 30
           },
           {
-            name: "right",
+            name: 'right',
             quantity: 70
           }
         ]
@@ -48,30 +48,30 @@ const datasets: Array<Dataset> = [
     project: 'basic',
     attributes: [
       {
-        name: "size",
+        name: 'size',
         options: [
           {
-            name: "small",
+            name: 'small',
             quantity: 50
           },
           {
-            name: "medium",
+            name: 'medium',
             quantity: 20
           },
           {
-            name: "large",
+            name: 'large',
             quantity: 30
           }
         ]
       }, {
-        name: "direction",
+        name: 'direction',
         options: [
           {
-            name: "left",
+            name: 'left',
             quantity: 50
           },
           {
-            name: "right",
+            name: 'right',
             quantity: 50
           }
         ]
@@ -85,30 +85,30 @@ const datasets: Array<Dataset> = [
     project: 'basic',
     attributes: [
       {
-        name: "size",
+        name: 'size',
         options: [
           {
-            name: "small",
+            name: 'small',
             quantity: 15
           },
           {
-            name: "medium",
+            name: 'medium',
             quantity: 45
           },
           {
-            name: "large",
+            name: 'large',
             quantity: 40
           }
         ]
       }, {
-        name: "direction",
+        name: 'direction',
         options: [
           {
-            name: "left",
+            name: 'left',
             quantity: 5
           },
           {
-            name: "right",
+            name: 'right',
             quantity: 95
           }
         ]
@@ -122,30 +122,30 @@ const datasets: Array<Dataset> = [
     project: 'complex',
     attributes: [
       {
-        name: "width",
+        name: 'width',
         options: [
           {
-            name: "thin",
+            name: 'thin',
             quantity: 93
           },
           {
-            name: "thick",
+            name: 'thick',
             quantity: 302
           }
         ]
       }, {
-        name: "height",
+        name: 'height',
         options: [
           {
-            name: "small",
+            name: 'small',
             quantity: 39
           },
           {
-            name: "medium",
+            name: 'medium',
             quantity: 94
           },
           {
-            name: "tall",
+            name: 'tall',
             quantity: 23
           }
         ]
@@ -159,30 +159,30 @@ const datasets: Array<Dataset> = [
     project: 'complex',
     attributes: [
       {
-        name: "width",
+        name: 'width',
         options: [
           {
-            name: "thin",
+            name: 'thin',
             quantity: 32
           },
           {
-            name: "thick",
+            name: 'thick',
             quantity: 89
           }
         ]
       }, {
-        name: "height",
+        name: 'height',
         options: [
           {
-            name: "small",
+            name: 'small',
             quantity: 19
           },
           {
-            name: "medium",
+            name: 'medium',
             quantity: 203
           },
           {
-            name: "tall",
+            name: 'tall',
             quantity: 45
           }
         ]
