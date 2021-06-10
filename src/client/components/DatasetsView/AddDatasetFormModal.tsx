@@ -28,7 +28,7 @@ const Options = ({ attributeIndex }: OptionsProps) => {
                 // eslint-disable-next-line react/no-array-index-key
                 <Form.Group key={`attributes.${attributeIndex}.options.${index}`}>
                   <Form.Field width={8}>
-                    <Field name={`attributes.${attributeIndex}.options.${index}.name`} placeholder="Option" />
+                    <Field name={`attributes.${attributeIndex}.options.${index}.name`} placeholder="Option" autoFocus={index === 0 ? null : 'true'} />
                   </Form.Field>
                   <Form.Field width={5}>
                     <Field name={`attributes.${attributeIndex}.options.${index}.quantity`} placeholder="Quantity" type="number" />
@@ -63,7 +63,7 @@ const Attributes = () => {
                 <Segment key={index} style={{ marginBottom: '2em' }}>
                   <Form.Group>
                     <Form.Field width={8}>
-                      <Field name={`attributes.${index}.name`} placeholder="Attribute" />
+                      <Field name={`attributes.${index}.name`} placeholder="Attribute" autoFocus="true" />
                     </Form.Field>
                     <Form.Button negative icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
                   </Form.Group>
@@ -131,7 +131,7 @@ const AddDatasetFormModal = () => {
             <Form onSubmit={formikProps.handleSubmit}>
               <Form.Field required>
                 <label htmlFor="name">Dataset Name</label>
-                <Field name="name" type="text" id="name" />
+                <Field name="name" type="text" id="name" autoFocus="true" />
               </Form.Field>
               <Form.Field>
                 <label htmlFor="project">Project</label>
