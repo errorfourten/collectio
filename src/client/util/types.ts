@@ -3,18 +3,9 @@ export interface Option {
   quantity: number
 }
 
-export interface OptionWithId extends Option {
-  id: string
-}
-
 export interface Attribute {
   name: string,
   options: Option[]
-}
-
-export interface AttributeWithId extends Attribute {
-  id: number,
-  options: OptionWithId[]
 }
 
 export interface Dataset {
@@ -26,7 +17,3 @@ export interface Dataset {
 }
 
 export type DatasetRawData = Omit<Dataset, 'id' | 'dateCreated'>
-
-export interface DatasetRawDataForm extends DatasetRawData {
-  attributes: AttributeWithId[]
-}

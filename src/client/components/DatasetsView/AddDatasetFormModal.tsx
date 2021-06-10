@@ -1,185 +1,87 @@
-import React, { useState, MouseEvent, FormEvent } from 'react'
+import React, { useState } from 'react'
 import {
-  Modal, Button, Header, Form, Segment
+  Modal, Button, Header, Segment, Form
 } from 'semantic-ui-react'
-import {
-  Dataset, OptionWithId, AttributeWithId, DatasetRawDataForm
-} from 'Utilities/types'
+import { Dataset, DatasetRawData } from 'Utilities/types'
 import { postDataset } from 'Utilities/services/dataset'
 import { useQueryClient, useMutation } from 'react-query'
-import util from './util'
+import {
+  Formik, Field, FieldArray, useFormikContext
+} from 'formik'
 
-type AttributesProps = {
-  formData: DatasetRawDataForm,
-  setFormData: (newData: DatasetRawDataForm) => void
+interface OptionsProps {
+  attributeIndex: number
 }
 
-type AttributeProps = {
-  attribute: AttributeWithId,
-  handleRemoveAttribute: (id: number) => void,
-  formData: DatasetRawDataForm,
-  setFormData: (newData: DatasetRawDataForm) => void
-}
-
-type OptionProps = {
-  option: OptionWithId,
-  handleRemoveOption: (id: string) => void,
-  handleOptionChange: (newOption: OptionWithId) => void
-}
-
-const Option = ({ option, handleRemoveOption, handleOptionChange }: OptionProps) => {
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newOption: OptionWithId = { ...option, name: e.target.value }
-    handleOptionChange(newOption)
-  }
-
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newOption: OptionWithId = { ...option, quantity: Number(e.target.value) }
-    handleOptionChange(newOption)
-  }
+const Options = ({ attributeIndex }: OptionsProps) => {
+  const { values } = useFormikContext<DatasetRawData>()
 
   return (
-    <Form.Group key={option.id}>
-      <Form.Input width={7} placeholder="Option" onChange={handleNameChange} />
-      <Form.Input type="number" width={5} placeholder="Quantity" onChange={handleQuantityChange} />
-      {/* This ensures that first option cannot be deleted */}
-      {
-        option.id.split('-')[1] !== '0'
-        && <Form.Button icon="close" onClick={() => handleRemoveOption(option.id)} />
+    <FieldArray
+      name={`attributes.${attributeIndex}.options`}
+      render={
+        (arrayHelpers) => (
+          values.attributes && (
+            <div>
+              <Header as="h5" dividing>Options</Header>
+              {values.attributes[attributeIndex].options.map((_option, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <Form.Group key={`attributes.${attributeIndex}.options.${index}`}>
+                  <Form.Field width={8}>
+                    <Field name={`attributes.${attributeIndex}.options.${index}.name`} placeholder="Option" />
+                  </Form.Field>
+                  <Form.Field width={5}>
+                    <Field name={`attributes.${attributeIndex}.options.${index}.quantity`} placeholder="Quantity" type="number" />
+                  </Form.Field>
+                  {
+                    index !== 0 && <Form.Button icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
+                  }
+                </Form.Group>
+              ))}
+              <Form.Button type="button" onClick={() => arrayHelpers.push({ name: '', quantity: '' })}>Add Option</Form.Button>
+            </div>
+          )
+        )
       }
-    </Form.Group>
+    />
   )
 }
 
-const Attribute = ({
-  attribute,
-  handleRemoveAttribute,
-  formData,
-  setFormData
-}: AttributeProps) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newAttribute = { ...attribute, name: e.target.value }
-    const newAttributes = formData.attributes.map((a) => (a.id === attribute.id ? newAttribute : a))
-    setFormData({ ...formData, attributes: newAttributes })
-  }
-
-  const changeOptionsInFormData = (newOptions: OptionWithId[]) => {
-    const newAttribute: AttributeWithId = { ...attribute, options: newOptions }
-    const newAttributes = formData.attributes.map((a) => (a.id === newAttribute.id ? newAttribute : a))
-    const newFormData = { ...formData, attributes: newAttributes }
-    setFormData(newFormData)
-  }
-
-  const handleAddOption = (event: MouseEvent) => {
-    event.preventDefault()
-    const newOption: OptionWithId = {
-      id: `${attribute.id}-${attribute.options.length}`,
-      name: '',
-      quantity: 0
-    }
-
-    const newOptions: OptionWithId[] = [...attribute.options, newOption]
-    changeOptionsInFormData(newOptions)
-  }
-
-  const handleRemoveOption = (id: string) => {
-    const newOptions = attribute.options.filter((o) => o.id !== id)
-    changeOptionsInFormData(newOptions)
-  }
-
-  const handleChangeOption = (newOption: OptionWithId) => {
-    const newOptions = attribute.options.map((o) => (o.id === newOption.id ? newOption : o))
-    changeOptionsInFormData(newOptions)
-  }
+const Attributes = () => {
+  const { values } = useFormikContext<DatasetRawData>()
 
   return (
-    <>
-      <Segment key={attribute.id} style={{ marginBottom: '2em' }}>
-        <Form.Group>
-          <Form.Input
-            width={9}
-            placeholder="Attribute"
-            onChange={handleInputChange}
-          />
-          <Form.Button negative icon="close" onClick={() => handleRemoveAttribute(attribute.id)} />
-        </Form.Group>
-        <Segment>
-          <Header as="h4">Options</Header>
-          {
-          attribute.options.map((option) => (
-            <Option
-              key={option.id}
-              option={option}
-              handleRemoveOption={handleRemoveOption}
-              handleOptionChange={handleChangeOption}
-            />
-          ))
-        }
-          <Form.Button onClick={handleAddOption}>Add Option</Form.Button>
-        </Segment>
-      </Segment>
-    </>
-  )
-}
-
-const Attributes = ({ formData, setFormData }: AttributesProps) => {
-  const handleAddAttribute = (event: MouseEvent) => {
-    event.preventDefault()
-
-    if (formData.attributes.length) {
-      const newAttribute: AttributeWithId = {
-        // Finds the next id for indexedAttributes
-        id: Math.max(...formData.attributes.map((a) => a.id)) + 1,
-        name: '',
-        options: []
+    <FieldArray
+      name="attributes"
+      render={
+        (arrayHelpers) => (
+          values.attributes && (
+            <div style={{ marginBottom: '1em' }}>
+              <Header as="h5" dividing>Attributes</Header>
+              {values.attributes.map((_attribute, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <Segment key={index} style={{ marginBottom: '2em' }}>
+                  <Form.Group>
+                    <Form.Field width={8}>
+                      <Field name={`attributes.${index}.name`} placeholder="Attribute" />
+                    </Form.Field>
+                    <Form.Button negative icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
+                  </Form.Group>
+                  <Options attributeIndex={index} />
+                </Segment>
+              ))}
+              <Form.Button primary type="button" onClick={() => arrayHelpers.push({ name: '', options: [{ name: '', quanaity: '' }] })}>Add Attribute</Form.Button>
+            </div>
+          )
+        )
       }
-      const attributes = [...formData.attributes, newAttribute]
-
-      setFormData({ ...formData, attributes })
-    } else {
-      setFormData({
-        ...formData,
-        attributes: [{
-          id: 1,
-          name: '',
-          options: []
-        }]
-      })
-    }
-  }
-
-  const handleRemoveAttribute = (id: number) => {
-    if (!formData.attributes) { return }
-    const attributes = formData.attributes.filter((a) => a.id !== id)
-    setFormData({ ...formData, attributes })
-  }
-
-  return (
-    <>
-      <Header dividing as="h4">Attributes</Header>
-      {formData.attributes
-        && formData.attributes.map((attribute) => (
-          <Attribute
-            key={attribute.id}
-            attribute={attribute}
-            handleRemoveAttribute={handleRemoveAttribute}
-            formData={formData}
-            setFormData={setFormData}
-          />
-        ))}
-      <Form.Button primary onClick={handleAddAttribute}>Add Attribute</Form.Button>
-    </>
+    />
   )
 }
 
 const AddDatasetFormModal = () => {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState<DatasetRawDataForm>({
-    name: '',
-    project: '',
-    attributes: []
-  })
 
   const mutation = useMutation(postDataset, {
     onSuccess: (data) => {
@@ -190,18 +92,15 @@ const AddDatasetFormModal = () => {
     }
   })
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-
-    const cleanData = util.processFormData(formData)
-    mutation.mutate(cleanData)
-
-    setFormData({
-      name: '',
-      project: '',
-      attributes: []
-    })
+  const handleSubmit = (values: DatasetRawData) => {
+    mutation.mutate(values)
     setOpen(false)
+  }
+
+  const initialValues: DatasetRawData = {
+    name: '',
+    project: '',
+    attributes: []
   }
 
   return (
@@ -224,26 +123,25 @@ const AddDatasetFormModal = () => {
         Create a New Dataset
       </Modal.Header>
       <Modal.Content>
-        <Form onSubmit={handleSubmit}>
-          <Form.Input
-            required
-            label="Dataset Name"
-            name="dataset"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-          <Form.Input
-            label="Project"
-            name="project"
-            value={formData.project}
-            onChange={(e) => setFormData({ ...formData, project: e.target.value })}
-          />
-          <Attributes
-            formData={formData}
-            setFormData={setFormData}
-          />
-          <Form.Button positive>Submit</Form.Button>
-        </Form>
+        <Formik
+          initialValues={initialValues}
+          onSubmit={(values) => handleSubmit(values)}
+        >
+          {(formikProps) => (
+            <Form onSubmit={formikProps.handleSubmit}>
+              <Form.Field required>
+                <label htmlFor="name">Dataset Name</label>
+                <Field name="name" type="text" id="name" />
+              </Form.Field>
+              <Form.Field>
+                <label htmlFor="project">Project</label>
+                <Field name="project" type="text" id="project" />
+              </Form.Field>
+              <Attributes />
+              <Form.Button positive type="submit">Submit</Form.Button>
+            </Form>
+          )}
+        </Formik>
       </Modal.Content>
     </Modal>
   )
