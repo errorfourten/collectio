@@ -125,7 +125,7 @@ const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>})
                   <Options attributeIndex={index} formikProps={formikProps} />
                 </Segment>
               ))}
-              <Form.Button primary type="button" onClick={() => arrayHelpers.push({ name: '', options: [{ name: '', quantity: '' }] })}>Add Attribute</Form.Button>
+              <Form.Button primary size="small" type="button" onClick={() => arrayHelpers.push({ name: '', options: [{ name: '', quantity: '' }] })}>Add Attribute</Form.Button>
             </div>
           )
         )
@@ -153,6 +153,7 @@ const AddDatasetFormModal = () => {
   })
 
   const handleSubmit = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
+    console.log(values)
     mutation.mutate(values)
     setSubmitting(false)
   }
@@ -165,7 +166,9 @@ const AddDatasetFormModal = () => {
   const initialValues: DatasetRawData = {
     name: '',
     project: '',
-    attributes: []
+    description: '',
+    attributes: [],
+    notes: ''
   }
 
   return (
@@ -194,6 +197,8 @@ const AddDatasetFormModal = () => {
           validationSchema={Yup.object({
             name: Yup.string().required('Required').trim(),
             project: Yup.string().trim(),
+            description: Yup.string().trim(),
+            notes: Yup.string().trim(),
             attributes: Yup.array()
               .of(
                 Yup.object().shape({
@@ -255,7 +260,33 @@ const AddDatasetFormModal = () => {
                   onReset={formikProps.handleReset}
                 />
               </Form.Field>
+              <Form.TextArea
+                name="description"
+                label="Description"
+                id="description"
+                rows="1"
+                placeholder="A short description of this dataset"
+                value={formikProps.values.description}
+                error={formikProps.errors.description}
+                onChange={formikProps.handleChange}
+                onBlur={formikProps.handleBlur}
+                onSubmit={formikProps.handleSubmit}
+                onReset={formikProps.handleReset}
+              />
               <Attributes formikProps={formikProps} />
+              <Form.TextArea
+                name="notes"
+                label="Notes"
+                id="notes"
+                rows="4"
+                placeholder="Any additional notes"
+                value={formikProps.values.notes}
+                error={formikProps.errors.notes}
+                onChange={formikProps.handleChange}
+                onBlur={formikProps.handleBlur}
+                onSubmit={formikProps.handleSubmit}
+                onReset={formikProps.handleReset}
+              />
               <Form.Button positive type="submit">Submit</Form.Button>
             </Form>
           )}

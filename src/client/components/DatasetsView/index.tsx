@@ -11,7 +11,7 @@ const DatasetCard = ({ dataset }: {dataset: Dataset}) => (
   <Segment clearing>
     <h2>{dataset.name}</h2>
     <div>
-      <i>{dataset.project}</i>
+      {dataset.description && <i>{dataset.description}</i>}
       <DatasetModal dataset={dataset} />
     </div>
   </Segment>

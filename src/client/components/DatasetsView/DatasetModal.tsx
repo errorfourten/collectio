@@ -12,11 +12,9 @@ const DatasetAttributes = ({ attributes }: {attributes: Dataset['attributes']}) 
           <>
             {attribute.name}
             <ul>
-              {
-                attribute.options.map((option) => (
-                  <li key={option.name}>{option.name}: {option.quantity}</li>
-                ))
-              }
+              {attribute.options.map((option) => (
+                <li key={option.name}>{option.name}: {option.quantity}</li>
+              ))}
             </ul>
           </>
         </li>
@@ -42,17 +40,22 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
       </Modal.Header>
       <Modal.Content style={{ minHeight: '' }}>
         <Modal.Description>
+          {dataset.description && <i>{dataset.description}</i>}
           <Header>Dataset Details</Header>
           <Header as="h4">Project</Header>
           <p>{dataset.project}</p>
-          {
-            dataset.attributes && (
+          {dataset.attributes && (
             <>
               <Header as="h4">Attributes</Header>
               <DatasetAttributes attributes={dataset.attributes} />
             </>
-            )
-          }
+          )}
+          {dataset.notes && (
+            <>
+              <Header as="h4">Notes</Header>
+              <p style={{ whiteSpace: 'pre-line' }}>{dataset.notes}</p>
+            </>
+          )}
         </Modal.Description>
       </Modal.Content>
     </Modal>

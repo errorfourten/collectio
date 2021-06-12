@@ -5,10 +5,12 @@ import utils from './utils'
 
 const datasets: Array<Dataset> = [
   {
-    id: '1',
+    id: 'ce01c3be-648a-4bc4-b6ad-62e8e84aa91e',
     name: 'Very cool dataset',
     dateCreated: new Date(2020, 11, 24, 10, 33, 30, 0),
     project: 'basic',
+    description: 'This is the best dataset ever created',
+    notes: 'Need to take note of what is constitutes as cool',
     attributes: [
       {
         name: 'size',
@@ -42,10 +44,11 @@ const datasets: Array<Dataset> = [
     ]
   },
   {
-    id: '2',
+    id: '459ed74c-0b1a-4db6-a852-c0dd602e55e7',
     name: 'Another dataset',
     dateCreated: new Date(2020, 12, 2, 20, 0, 0, 0),
     project: 'basic',
+    description: 'Just another generic one',
     attributes: [
       {
         name: 'size',
@@ -79,10 +82,11 @@ const datasets: Array<Dataset> = [
     ]
   },
   {
-    id: '3',
+    id: '2394ca32-8d0e-4e05-919b-6ffc83ffe804',
     name: 'Big dataset',
     dateCreated: new Date(2021, 1, 5, 0, 0, 0, 0),
     project: 'basic',
+    notes: 'Gigantic dataset needs a lot of data',
     attributes: [
       {
         name: 'size',
@@ -116,7 +120,7 @@ const datasets: Array<Dataset> = [
     ]
   },
   {
-    id: '4',
+    id: 'ec07515b-3202-47c5-9a4b-965fce23d44b',
     name: 'A new beginning',
     dateCreated: new Date(2020, 4, 2),
     project: 'complex',
@@ -153,10 +157,11 @@ const datasets: Array<Dataset> = [
     ]
   },
   {
-    id: '5',
+    id: '3c8bcb95-17ec-4f2e-b16f-d435fdaf0ddf',
     name: 'This is the end',
     dateCreated: new Date(2020, 5, 2),
     project: 'complex',
+    description: 'Last ever dataset?',
     attributes: [
       {
         name: 'width',

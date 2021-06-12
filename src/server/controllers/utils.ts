@@ -13,6 +13,20 @@ const parseName = (name: unknown): string => {
   return name
 }
 
+const parseDescription = (description: unknown): string => {
+  if (!isString(description)) {
+    throw new Error(`Dataset description ${description} is not a string. Type is ${typeof description}`)
+  }
+  return description
+}
+
+const parseNotes = (notes: unknown): string => {
+  if (!isString(notes)) {
+    throw new Error(`Dataset notes ${notes} is not a string. Type if ${typeof notes}`)
+  }
+  return notes
+}
+
 const parseProject = (project: unknown): string => {
   if (!isString(project)) {
     throw new Error(`Dataset project ${project} is not a string. Type is ${typeof project}`)
@@ -67,12 +81,18 @@ const parseAttributes = (attributes: unknown): Attribute[] => {
 type RawDatasetFields = {
   name: unknown,
   project: unknown,
+  description: unknown,
+  notes: unknown
   attributes: unknown
 }
 
-const toNewDataset = ({ name, project, attributes }: RawDatasetFields): DatasetRawData => {
+const toNewDataset = ({
+  name, project, description, notes, attributes
+}: RawDatasetFields): DatasetRawData => {
   const newDataset: DatasetRawData = {
     name: parseName(name),
+    ...(description && { description: parseDescription(description) }) as Record<string, unknown>,
+    ...(notes && { notes: parseNotes(notes) }) as Record<string, unknown>,
     ...(project && { project: parseProject(project) }) as Record<string, unknown>,
     ...(attributes && { attributes: parseAttributes(attributes) }) as Record<string, unknown>
   }

@@ -13,6 +13,8 @@ export interface Dataset {
   name: string,
   dateCreated: Date,
   project?: string,
+  description?: string,
+  notes?: string,
   attributes?: Attribute[]
 }
 
