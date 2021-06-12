@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import {
-  Modal, Button, Header, Segment, Form
+  Modal, Button, Header, Segment, Form, Message
 } from 'semantic-ui-react'
-import { Dataset, DatasetRawData } from 'Utilities/types'
+import { Dataset, DatasetRawData, Attribute } from 'Utilities/types'
 import { postDataset } from 'Utilities/services/dataset'
 import { useQueryClient, useMutation } from 'react-query'
 import {
-  Formik, Field, FieldArray, useFormikContext
+  Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers
 } from 'formik'
+import * as Yup from 'yup'
+import { AxiosError } from 'axios'
 
 interface OptionsProps {
-  attributeIndex: number
+  attributeIndex: number,
+  formikProps: FormikProps<DatasetRawData>
 }
 
-const Options = ({ attributeIndex }: OptionsProps) => {
+const Options = ({ attributeIndex, formikProps }: OptionsProps) => {
   const { values } = useFormikContext<DatasetRawData>()
 
   return (
@@ -28,10 +31,48 @@ const Options = ({ attributeIndex }: OptionsProps) => {
                 // eslint-disable-next-line react/no-array-index-key
                 <Form.Group key={`attributes.${attributeIndex}.options.${index}`}>
                   <Form.Field width={8}>
-                    <Field name={`attributes.${attributeIndex}.options.${index}.name`} placeholder="Option" autoFocus={index === 0 ? null : 'true'} />
+                    <Form.Input
+                      name={`attributes.${attributeIndex}.options.${index}.name`}
+                      placeholder="Option"
+                      autoFocus={index !== 0}
+                      value={formikProps.values.attributes && formikProps.values.attributes[attributeIndex]?.options[index]?.name}
+                      error={formikProps.errors.attributes
+                        && formikProps.touched.attributes
+                        && (formikProps.touched.attributes as unknown as boolean[])[attributeIndex]
+                        && ((formikProps.touched.attributes as unknown as boolean[])[attributeIndex] as unknown as Attribute).options
+                        && ((formikProps.touched.attributes as unknown as boolean[])[attributeIndex] as unknown as Attribute).options[index]?.name
+                        && formikProps.errors.attributes[attributeIndex]
+                        ? (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options
+                        && (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options[index]
+                        && (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options[index].name
+                        : false}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      onSubmit={formikProps.handleSubmit}
+                      onReset={formikProps.handleReset}
+                    />
                   </Form.Field>
                   <Form.Field width={5}>
-                    <Field name={`attributes.${attributeIndex}.options.${index}.quantity`} placeholder="Quantity" type="number" />
+                    <Form.Input
+                      name={`attributes.${attributeIndex}.options.${index}.quantity`}
+                      placeholder="Quantity"
+                      type="number"
+                      value={formikProps.values.attributes && formikProps.values.attributes[attributeIndex]?.options[index]?.quantity}
+                      error={formikProps.errors.attributes
+                        && formikProps.touched.attributes
+                        && (formikProps.touched.attributes as unknown as boolean[])[attributeIndex]
+                        && ((formikProps.touched.attributes as unknown as boolean[])[attributeIndex] as unknown as Attribute).options
+                        && ((formikProps.touched.attributes as unknown as boolean[])[attributeIndex] as unknown as Attribute).options[index]?.quantity
+                        && formikProps.errors.attributes[attributeIndex]
+                        ? (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options
+                        && (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options[index]
+                        && (formikProps.errors.attributes[attributeIndex] as unknown as Attribute).options[index].quantity
+                        : false}
+                      onChange={formikProps.handleChange}
+                      onBlur={formikProps.handleBlur}
+                      onSubmit={formikProps.handleSubmit}
+                      onReset={formikProps.handleReset}
+                    />
                   </Form.Field>
                   {
                     index !== 0 && <Form.Button icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
@@ -47,7 +88,7 @@ const Options = ({ attributeIndex }: OptionsProps) => {
   )
 }
 
-const Attributes = () => {
+const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>}) => {
   const { values } = useFormikContext<DatasetRawData>()
 
   return (
@@ -63,14 +104,28 @@ const Attributes = () => {
                 <Segment key={index} style={{ marginBottom: '2em' }}>
                   <Form.Group>
                     <Form.Field width={8}>
-                      <Field name={`attributes.${index}.name`} placeholder="Attribute" autoFocus="true" />
+                      <Form.Input
+                        name={`attributes.${index}.name`}
+                        placeholder="Attribute"
+                        value={formikProps.values.attributes && formikProps.values.attributes[index].name}
+                        error={formikProps.errors.attributes
+                          && formikProps.touched.attributes
+                          && (formikProps.touched.attributes as unknown as boolean[])[index]
+                          && ((formikProps.touched.attributes as unknown as boolean[])[index] as unknown as Attribute).name
+                          && formikProps.errors.attributes[index] ? (formikProps.errors.attributes[index] as unknown as Attribute).name : false}
+                        onChange={formikProps.handleChange}
+                        onBlur={formikProps.handleBlur}
+                        onSubmit={formikProps.handleSubmit}
+                        onReset={formikProps.handleReset}
+                        autoFocus
+                      />
                     </Form.Field>
                     <Form.Button negative icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
                   </Form.Group>
-                  <Options attributeIndex={index} />
+                  <Options attributeIndex={index} formikProps={formikProps} />
                 </Segment>
               ))}
-              <Form.Button primary type="button" onClick={() => arrayHelpers.push({ name: '', options: [{ name: '', quanaity: '' }] })}>Add Attribute</Form.Button>
+              <Form.Button primary type="button" onClick={() => arrayHelpers.push({ name: '', options: [{ name: '', quantity: '' }] })}>Add Attribute</Form.Button>
             </div>
           )
         )
@@ -82,6 +137,7 @@ const Attributes = () => {
 const AddDatasetFormModal = () => {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const mutation = useMutation(postDataset, {
     onSuccess: (data) => {
@@ -89,12 +145,21 @@ const AddDatasetFormModal = () => {
         if (oldData) { return [...oldData, data] }
         return [data]
       })
+      setOpen(false)
+    },
+    onError: (error: AxiosError) => {
+      if (error.response) { setErrorMessage(error.response.data) }
     }
   })
 
-  const handleSubmit = (values: DatasetRawData) => {
+  const handleSubmit = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
     mutation.mutate(values)
+    setSubmitting(false)
+  }
+
+  const handleClose = () => {
     setOpen(false)
+    setErrorMessage('')
   }
 
   const initialValues: DatasetRawData = {
@@ -106,7 +171,7 @@ const AddDatasetFormModal = () => {
   return (
     <Modal
       size="tiny"
-      onClose={() => setOpen(false)}
+      onClose={handleClose}
       onOpen={() => setOpen(true)}
       open={open}
       trigger={<Button primary>Create</Button>}
@@ -125,19 +190,72 @@ const AddDatasetFormModal = () => {
       <Modal.Content>
         <Formik
           initialValues={initialValues}
-          onSubmit={(values) => handleSubmit(values)}
+          onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
+          validationSchema={Yup.object({
+            name: Yup.string().required('Required').trim(),
+            project: Yup.string().trim(),
+            attributes: Yup.array()
+              .of(
+                Yup.object().shape({
+                  name: Yup.string().required('Required').trim(),
+                  options: Yup.array()
+                    .of(
+                      Yup.object().shape({
+                        name: Yup.string().required('Required').trim(),
+                        quantity: Yup.number()
+                          .required('Required')
+                          .min(0, 'Must be at least 0')
+                          .integer('Must be an integer')
+                      })
+                    )
+                })
+              )
+          })}
         >
           {(formikProps) => (
-            <Form onSubmit={formikProps.handleSubmit}>
+            <Form
+              onSubmit={formikProps.handleSubmit}
+              loading={formikProps.isSubmitting}
+              error={errorMessage !== ''}
+            >
+              {errorMessage && (
+                <Message
+                  error
+                  header="Submission Error"
+                  content={errorMessage}
+                  style={{ minHeight: '' }}
+                />
+              )}
               <Form.Field required>
                 <label htmlFor="name">Dataset Name</label>
-                <Field name="name" type="text" id="name" autoFocus="true" />
+                <Form.Input
+                  name="name"
+                  type="text"
+                  id="name"
+                  value={formikProps.values.name}
+                  error={formikProps.errors.name}
+                  onChange={formikProps.handleChange}
+                  onBlur={formikProps.handleBlur}
+                  onSubmit={formikProps.handleSubmit}
+                  onReset={formikProps.handleReset}
+                  autoFocus
+                />
               </Form.Field>
               <Form.Field>
                 <label htmlFor="project">Project</label>
-                <Field name="project" type="text" id="project" />
+                <Form.Input
+                  name="project"
+                  type="text"
+                  id="project"
+                  value={formikProps.values.project}
+                  error={formikProps.errors.project}
+                  onChange={formikProps.handleChange}
+                  onBlur={formikProps.handleBlur}
+                  onSubmit={formikProps.handleSubmit}
+                  onReset={formikProps.handleReset}
+                />
               </Form.Field>
-              <Attributes />
+              <Attributes formikProps={formikProps} />
               <Form.Button positive type="submit">Submit</Form.Button>
             </Form>
           )}
