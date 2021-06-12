@@ -3,7 +3,7 @@ import { RequestHandler } from 'express'
 import { v4 as uuid } from 'uuid'
 import utils from './utils'
 
-const datasets: Array<Dataset> = [
+let datasets: Array<Dataset> = [
   {
     id: 'ce01c3be-648a-4bc4-b6ad-62e8e84aa91e',
     name: 'Very cool dataset',
@@ -211,6 +211,10 @@ const addDataset = (dataset: DatasetRawData): Dataset => {
   return newDataset
 }
 
+const removeDataset = (id: Dataset['id']) => {
+  datasets = datasets.filter((dataset) => dataset.id !== id)
+}
+
 const create: RequestHandler = async (req, res) => {
   try {
     const newDataset = utils.toNewDataset(req.body)
@@ -221,7 +225,18 @@ const create: RequestHandler = async (req, res) => {
   }
 }
 
+const remove: RequestHandler = async (req, res) => {
+  try {
+    const id = utils.parseUUID(req.params.id)
+    removeDataset(id)
+    res.status(204).send()
+  } catch (e) {
+    res.status(400).send(e.message)
+  }
+}
+
 export default {
   getAll,
-  create
+  create,
+  remove
 }

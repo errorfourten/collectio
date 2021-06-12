@@ -1,8 +1,20 @@
 import { Attribute, DatasetRawData, Option as DatasetOption } from '@util/types'
+import { validate as uuidValidate } from 'uuid'
 
 const isString = (text: unknown): text is string => typeof text === 'string' || text instanceof String
 
 const isNumber = (digits: unknown): digits is number => typeof digits === 'number' || digits instanceof Number
+
+const parseUUID = (uuid: unknown): string => {
+  if (!uuid) {
+    throw new Error('Missing dataset id')
+  } else if (!isString(uuid)) {
+    throw new Error(`Dataset id ${uuid} is not a string. Type is ${typeof uuid}`)
+  } else if (!uuidValidate(uuid)) {
+    throw new Error(`Invalid UUID: ${uuid}`)
+  }
+  return uuid
+}
 
 const parseName = (name: unknown): string => {
   if (!name) {
@@ -100,5 +112,6 @@ const toNewDataset = ({
 }
 
 export default {
-  toNewDataset
+  toNewDataset,
+  parseUUID
 }

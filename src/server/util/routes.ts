@@ -5,5 +5,6 @@ const router = Router()
 
 router.get('/datasets', datasetsController.getAll)
 router.post('/datasets', datasetsController.create)
+router.delete('/datasets/:id', datasetsController.remove)
 
 export default router
