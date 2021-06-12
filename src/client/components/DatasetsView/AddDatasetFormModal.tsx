@@ -153,7 +153,6 @@ const AddDatasetFormModal = () => {
   })
 
   const handleSubmit = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
-    console.log(values)
     mutation.mutate(values)
     setSubmitting(false)
   }
@@ -228,7 +227,7 @@ const AddDatasetFormModal = () => {
                   error
                   header="Submission Error"
                   content={errorMessage}
-                  style={{ minHeight: '' }}
+                  style={{ minHeight: '0px' }}
                 />
               )}
               <Form.Field required>

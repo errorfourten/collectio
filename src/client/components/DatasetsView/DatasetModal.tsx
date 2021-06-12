@@ -38,7 +38,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
       <Modal.Header>
         {dataset.name}
       </Modal.Header>
-      <Modal.Content style={{ minHeight: '' }}>
+      <Modal.Content style={{ minHeight: '0px' }}>
         <Modal.Description>
           {dataset.description && <i>{dataset.description}</i>}
           <Header>Dataset Details</Header>
