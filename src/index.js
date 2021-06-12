@@ -14,7 +14,7 @@ const app = express()
 app.use('/api', (req, res, next) => require('@root/server')(req, res, next)) // eslint-disable-line
 
 // Use hot loading in backend
-const watcher = chokidar.watch('.src/server')
+const watcher = chokidar.watch('./src/server')
 watcher.on('ready', () => {
   watcher.on('all', () => {
     Object.keys(require.cache).forEach((id) => {
