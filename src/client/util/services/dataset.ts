@@ -12,3 +12,7 @@ export const postDataset = async (dataset: DatasetRawData) => {
   const response = await axios.post(basePath, dataset)
   return response.data as Dataset
 }
+
+export const deleteDataset = async (id: Dataset['id']) => {
+  await axios.delete(`${basePath}/${id}`)
+}
