@@ -200,6 +200,20 @@ const getAll: RequestHandler = async (_req, res) => {
   res.send(datasets)
 }
 
+const getOne: RequestHandler = async (req, res) => {
+  try {
+    const id = utils.parseUUID(req.params.id)
+    const dataset = datasets.filter((d) => d.id === id)
+    if (dataset.length) {
+      res.json(dataset)
+    } else {
+      res.status(404).send('Dataset not found')
+    }
+  } catch (e) {
+    res.status(400).send(e.message)
+  }
+}
+
 const addDataset = (dataset: DatasetRawData): Dataset => {
   const newDataset = {
     id: uuid(),
@@ -252,6 +266,7 @@ const edit: RequestHandler = async (req, res) => {
 
 export default {
   getAll,
+  getOne,
   create,
   remove,
   edit
