@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import { DatasetRawData, Attribute } from 'Utilities/types'
 import {
-  Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers, FormikValues
+  Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers
 } from 'formik'
 import * as Yup from 'yup'
 
