@@ -24,6 +24,7 @@
       "@controllers/*": ["server/controllers/*"],
       "@middleware/*": ["server/middleware/*"],
       "@util/*": ["server/util/*"],
+      "@services/*": ["server/services/*"],
       "Utilities/*": ["client/util/*"],
       "Components/*": ["client/components/*"],
       "Assets/*": ["client/assets/*"],
