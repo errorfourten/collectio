@@ -1,4 +1,6 @@
-import { Attribute, DatasetRawData, Option as DatasetOption } from '@util/types'
+import {
+  Attribute, Dataset, DatasetRawData, Option as DatasetOption
+} from '@util/types'
 import { validate as uuidValidate } from 'uuid'
 
 const isString = (text: unknown): text is string => typeof text === 'string' || text instanceof String
@@ -14,6 +16,17 @@ const parseUUID = (uuid: unknown): string => {
     throw new Error(`Invalid UUID: ${uuid}`)
   }
   return uuid
+}
+
+const parseDate = (date: unknown): Date => {
+  if (!date) {
+    throw new Error('Missing dataset date')
+  } else if (!isString(date)) {
+    throw new Error(`Dataset date ${date} is not a string. Type is ${typeof date}`)
+  } else if (Number.isNaN(Date.parse(date))) {
+    throw new Error(`Invalid date: ${date}`)
+  }
+  return new Date(date)
 }
 
 const parseName = (name: unknown): string => {
@@ -90,7 +103,7 @@ const parseAttributes = (attributes: unknown): Attribute[] => {
   return attributes
 }
 
-type RawDatasetFields = {
+interface RawDatasetFields {
   name: unknown,
   project: unknown,
   description: unknown,
@@ -100,18 +113,37 @@ type RawDatasetFields = {
 
 const toNewDataset = ({
   name, project, description, notes, attributes
-}: RawDatasetFields): DatasetRawData => {
-  const newDataset: DatasetRawData = {
+}: RawDatasetFields): DatasetRawData => (
+  {
     name: parseName(name),
     ...(description && { description: parseDescription(description) }) as Record<string, unknown>,
     ...(notes && { notes: parseNotes(notes) }) as Record<string, unknown>,
     ...(project && { project: parseProject(project) }) as Record<string, unknown>,
     ...(attributes && { attributes: parseAttributes(attributes) }) as Record<string, unknown>
   }
-  return newDataset
+)
+
+interface ValidateDatasetFields extends RawDatasetFields {
+  id: unknown,
+  dateCreated: unknown
 }
+
+const toDataset = ({
+  id, dateCreated, name, project, description, notes, attributes
+}: ValidateDatasetFields): Dataset => (
+  {
+    id: parseUUID(id),
+    dateCreated: parseDate(dateCreated),
+    name: parseName(name),
+    ...(description && { description: parseDescription(description) }) as Record<string, unknown>,
+    ...(notes && { notes: parseNotes(notes) }) as Record<string, unknown>,
+    ...(project && { project: parseProject(project) }) as Record<string, unknown>,
+    ...(attributes && { attributes: parseAttributes(attributes) }) as Record<string, unknown>
+  }
+)
 
 export default {
   toNewDataset,
+  toDataset,
   parseUUID
 }

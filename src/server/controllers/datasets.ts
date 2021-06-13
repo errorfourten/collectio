@@ -215,6 +215,10 @@ const removeDataset = (id: Dataset['id']) => {
   datasets = datasets.filter((dataset) => dataset.id !== id)
 }
 
+const editDataset = (id: string, editedDataset: Dataset) => {
+  datasets = datasets.map((dataset) => (dataset.id === id ? editedDataset : dataset))
+}
+
 const create: RequestHandler = async (req, res) => {
   try {
     const newDataset = utils.toNewDataset(req.body)
@@ -235,8 +239,20 @@ const remove: RequestHandler = async (req, res) => {
   }
 }
 
+const edit: RequestHandler = async (req, res) => {
+  try {
+    const id = utils.parseUUID(req.params.id)
+    const dataset = utils.toDataset(req.body)
+    editDataset(id, dataset)
+    res.json(dataset)
+  } catch (e) {
+    res.status(400).send(e.message)
+  }
+}
+
 export default {
   getAll,
   create,
-  remove
+  remove,
+  edit
 }
