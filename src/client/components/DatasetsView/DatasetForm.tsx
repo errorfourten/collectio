@@ -1,15 +1,12 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
-  Modal, Button, Header, Segment, Form, Message
+  Header, Segment, Form, Message
 } from 'semantic-ui-react'
-import { Dataset, DatasetRawData, Attribute } from 'Utilities/types'
-import { postDataset } from 'Utilities/services/dataset'
-import { useQueryClient, useMutation } from 'react-query'
+import { DatasetRawData, Attribute } from 'Utilities/types'
 import {
   Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers
 } from 'formik'
 import * as Yup from 'yup'
-import { AxiosError } from 'axios'
 
 interface OptionsProps {
   attributeIndex: number,
@@ -134,165 +131,113 @@ const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>})
   )
 }
 
-const AddDatasetFormModal = () => {
-  const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+type ModalProps = {
+  initialValues: DatasetRawData,
+  errorMessage: string,
+  handleSubmit: (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => void
+}
 
-  const mutation = useMutation(postDataset, {
-    onSuccess: (data) => {
-      queryClient.setQueryData<Dataset[]>('datasets', (oldData) => {
-        if (oldData) { return [...oldData, data] }
-        return [data]
-      })
-      setOpen(false)
-    },
-    onError: (error: AxiosError) => {
-      if (error.response) { setErrorMessage(error.response.data) }
-    }
-  })
-
-  const handleSubmit = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
-    mutation.mutate(values)
-    setSubmitting(false)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
-    setErrorMessage('')
-  }
-
-  const initialValues: DatasetRawData = {
-    name: '',
-    project: '',
-    description: '',
-    attributes: [],
-    notes: ''
-  }
-
-  return (
-    <Modal
-      size="tiny"
-      onClose={handleClose}
-      onOpen={() => setOpen(true)}
-      open={open}
-      trigger={<Button primary>Create</Button>}
-    >
-      <i
-        role="button"
-        tabIndex={0}
-        aria-label="Close Modal"
-        className="close inside icon"
-        onClick={() => setOpen(false)}
-        onKeyDown={() => setOpen(false)}
-      />
-      <Modal.Header>
-        Create a New Dataset
-      </Modal.Header>
-      <Modal.Content>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
-          validationSchema={Yup.object({
+const AddDatasetFormModal = ({ initialValues, errorMessage, handleSubmit }: ModalProps) => (
+  <Formik
+    initialValues={initialValues}
+    onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
+    validationSchema={Yup.object({
+      name: Yup.string().required('Required').trim(),
+      project: Yup.string().trim(),
+      description: Yup.string().trim(),
+      notes: Yup.string().trim(),
+      attributes: Yup.array()
+        .of(
+          Yup.object().shape({
             name: Yup.string().required('Required').trim(),
-            project: Yup.string().trim(),
-            description: Yup.string().trim(),
-            notes: Yup.string().trim(),
-            attributes: Yup.array()
+            options: Yup.array()
               .of(
                 Yup.object().shape({
                   name: Yup.string().required('Required').trim(),
-                  options: Yup.array()
-                    .of(
-                      Yup.object().shape({
-                        name: Yup.string().required('Required').trim(),
-                        quantity: Yup.number()
-                          .required('Required')
-                          .min(0, 'Must be at least 0')
-                          .integer('Must be an integer')
-                      })
-                    )
+                  quantity: Yup.number()
+                    .required('Required')
+                    .min(0, 'Must be at least 0')
+                    .integer('Must be an integer')
                 })
               )
-          })}
-        >
-          {(formikProps) => (
-            <Form
-              onSubmit={formikProps.handleSubmit}
-              loading={formikProps.isSubmitting}
-              error={errorMessage !== ''}
-            >
-              {errorMessage && (
-                <Message
-                  error
-                  header="Submission Error"
-                  content={errorMessage}
-                  style={{ minHeight: '0px' }}
-                />
-              )}
-              <Form.Field required>
-                <label htmlFor="name">Dataset Name</label>
-                <Form.Input
-                  name="name"
-                  type="text"
-                  id="name"
-                  value={formikProps.values.name}
-                  error={formikProps.errors.name}
-                  onChange={formikProps.handleChange}
-                  onBlur={formikProps.handleBlur}
-                  onSubmit={formikProps.handleSubmit}
-                  onReset={formikProps.handleReset}
-                  autoFocus
-                />
-              </Form.Field>
-              <Form.Field>
-                <label htmlFor="project">Project</label>
-                <Form.Input
-                  name="project"
-                  type="text"
-                  id="project"
-                  value={formikProps.values.project}
-                  error={formikProps.errors.project}
-                  onChange={formikProps.handleChange}
-                  onBlur={formikProps.handleBlur}
-                  onSubmit={formikProps.handleSubmit}
-                  onReset={formikProps.handleReset}
-                />
-              </Form.Field>
-              <Form.TextArea
-                name="description"
-                label="Description"
-                id="description"
-                rows="1"
-                placeholder="A short description of this dataset"
-                value={formikProps.values.description}
-                error={formikProps.errors.description}
-                onChange={formikProps.handleChange}
-                onBlur={formikProps.handleBlur}
-                onSubmit={formikProps.handleSubmit}
-                onReset={formikProps.handleReset}
-              />
-              <Attributes formikProps={formikProps} />
-              <Form.TextArea
-                name="notes"
-                label="Notes"
-                id="notes"
-                rows="4"
-                placeholder="Any additional notes"
-                value={formikProps.values.notes}
-                error={formikProps.errors.notes}
-                onChange={formikProps.handleChange}
-                onBlur={formikProps.handleBlur}
-                onSubmit={formikProps.handleSubmit}
-                onReset={formikProps.handleReset}
-              />
-              <Form.Button positive type="submit">Submit</Form.Button>
-            </Form>
-          )}
-        </Formik>
-      </Modal.Content>
-    </Modal>
-  )
-}
+          })
+        )
+    })}
+  >
+    {(formikProps) => (
+      <Form
+        onSubmit={formikProps.handleSubmit}
+        loading={formikProps.isSubmitting}
+        error={errorMessage !== ''}
+      >
+        {errorMessage && (
+          <Message
+            error
+            header="Submission Error"
+            content={errorMessage}
+            style={{ minHeight: '0px' }}
+          />
+        )}
+        <Form.Field required>
+          <label htmlFor="name">Dataset Name</label>
+          <Form.Input
+            name="name"
+            type="text"
+            id="name"
+            value={formikProps.values.name}
+            error={formikProps.errors.name}
+            onChange={formikProps.handleChange}
+            onBlur={formikProps.handleBlur}
+            onSubmit={formikProps.handleSubmit}
+            onReset={formikProps.handleReset}
+            autoFocus
+          />
+        </Form.Field>
+        <Form.Field>
+          <label htmlFor="project">Project</label>
+          <Form.Input
+            name="project"
+            type="text"
+            id="project"
+            value={formikProps.values.project}
+            error={formikProps.errors.project}
+            onChange={formikProps.handleChange}
+            onBlur={formikProps.handleBlur}
+            onSubmit={formikProps.handleSubmit}
+            onReset={formikProps.handleReset}
+          />
+        </Form.Field>
+        <Form.TextArea
+          name="description"
+          label="Description"
+          id="description"
+          rows="1"
+          placeholder="A short description of this dataset"
+          value={formikProps.values.description}
+          error={formikProps.errors.description}
+          onChange={formikProps.handleChange}
+          onBlur={formikProps.handleBlur}
+          onSubmit={formikProps.handleSubmit}
+          onReset={formikProps.handleReset}
+        />
+        <Attributes formikProps={formikProps} />
+        <Form.TextArea
+          name="notes"
+          label="Notes"
+          id="notes"
+          rows="4"
+          placeholder="Any additional notes"
+          value={formikProps.values.notes}
+          error={formikProps.errors.notes}
+          onChange={formikProps.handleChange}
+          onBlur={formikProps.handleBlur}
+          onSubmit={formikProps.handleSubmit}
+          onReset={formikProps.handleReset}
+        />
+        <Form.Button positive type="submit">Submit</Form.Button>
+      </Form>
+    )}
+  </Formik>
+)
 
 export default AddDatasetFormModal
