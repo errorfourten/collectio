@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Modal, Button } from 'semantic-ui-react'
 import { useQueryClient, useMutation } from 'react-query'
 import { AxiosError } from 'axios'
-import { FormikHelpers } from 'formik'
+import { FormikHelpers, FormikProps, FormikValues } from 'formik'
 import { postDataset } from 'Utilities/services/dataset'
 import { Dataset, DatasetRawData } from 'Utilities/types'
 import DatasetForm from './DatasetForm'
@@ -38,7 +38,14 @@ const AddDatasetModal = () => {
     setErrorMessage('')
   }
 
-  const handleSubmit = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
+  const formRef = useRef<FormikProps<DatasetRawData>>(null)
+  const handleSubmit = () => {
+    if (formRef.current) {
+      formRef.current.handleSubmit()
+    }
+  }
+
+  const submitAction = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
     mutation.mutate(values)
     setSubmitting(false)
   }
@@ -66,9 +73,13 @@ const AddDatasetModal = () => {
         <DatasetForm
           initialValues={initialValues}
           errorMessage={errorMessage}
-          handleSubmit={handleSubmit}
+          formRef={formRef}
+          submitAction={submitAction}
         />
       </Modal.Content>
+      <Modal.Actions>
+        <Button positive type="submit" onClick={handleSubmit}>Submit</Button>
+      </Modal.Actions>
     </Modal>
   )
 }

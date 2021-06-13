@@ -4,7 +4,7 @@ import {
 } from 'semantic-ui-react'
 import { DatasetRawData, Attribute } from 'Utilities/types'
 import {
-  Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers
+  Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers, FormikValues
 } from 'formik'
 import * as Yup from 'yup'
 
@@ -134,13 +134,17 @@ const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>})
 type ModalProps = {
   initialValues: DatasetRawData,
   errorMessage: string,
-  handleSubmit: (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => void
+  formRef: React.RefObject<FormikProps<DatasetRawData>>
+  submitAction: (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => void
 }
 
-const AddDatasetFormModal = ({ initialValues, errorMessage, handleSubmit }: ModalProps) => (
+const AddDatasetFormModal = ({
+  initialValues, errorMessage, formRef, submitAction
+}: ModalProps) => (
   <Formik
     initialValues={initialValues}
-    onSubmit={(values, { setSubmitting }) => handleSubmit(values, setSubmitting)}
+    onSubmit={(values, { setSubmitting }) => submitAction(values, setSubmitting)}
+    innerRef={formRef}
     validationSchema={Yup.object({
       name: Yup.string().required('Required').trim(),
       project: Yup.string().trim(),
@@ -234,7 +238,6 @@ const AddDatasetFormModal = ({ initialValues, errorMessage, handleSubmit }: Moda
           onSubmit={formikProps.handleSubmit}
           onReset={formikProps.handleReset}
         />
-        <Form.Button positive type="submit">Submit</Form.Button>
       </Form>
     )}
   </Formik>
