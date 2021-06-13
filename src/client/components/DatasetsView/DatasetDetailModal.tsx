@@ -3,6 +3,7 @@ import { Modal, Button, Header } from 'semantic-ui-react'
 import { Dataset } from 'Utilities/types'
 import { deleteDataset } from 'Utilities/services/dataset'
 import { useMutation, useQueryClient } from 'react-query'
+import EditDatasetModal from './EditDatasetModal'
 
 const DatasetAttributes = ({ attributes }: {attributes: Dataset['attributes']}) => {
   if (!attributes) { return null }
@@ -28,7 +29,7 @@ const DatasetAttributes = ({ attributes }: {attributes: Dataset['attributes']}) 
 const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
 
   const deleteMutation = useMutation(deleteDataset, {
     onSuccess: () => {
@@ -42,7 +43,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     deleteMutation.mutate(dataset.id)
-    setConfirmOpen(false)
+    setDeleteOpen(false)
     setOpen(false)
   }
 
@@ -81,20 +82,21 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
       </Modal.Content>
 
       <Modal.Actions>
+        <EditDatasetModal originalValues={dataset} />
         <Button
           negative
           content="Delete"
           icon="trash"
-          onClick={() => setConfirmOpen(true)}
+          onClick={() => setDeleteOpen(true)}
         />
       </Modal.Actions>
 
       <Modal
         size="tiny"
         centered
-        onClose={() => setConfirmOpen(false)}
-        onOpen={() => setConfirmOpen(true)}
-        open={confirmOpen}
+        onClose={() => setDeleteOpen(false)}
+        onOpen={() => setDeleteOpen(true)}
+        open={deleteOpen}
         dimmer={{ style: { justifyContent: 'center' } }}
       >
         <Modal.Header>Delete Dataset</Modal.Header>
@@ -102,7 +104,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
           <p>Are you sure you want to delete <b>{dataset.name}</b>?</p>
         </Modal.Content>
         <Modal.Actions>
-          <Button negative onClick={() => setConfirmOpen(false)}>No</Button>
+          <Button negative onClick={() => setDeleteOpen(false)}>No</Button>
           <Button positive onClick={handleDelete}>Yes</Button>
         </Modal.Actions>
       </Modal>
