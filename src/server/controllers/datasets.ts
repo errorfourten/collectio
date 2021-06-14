@@ -32,10 +32,15 @@ const create: RequestHandler = async (req, res) => {
 }
 
 const remove: RequestHandler = async (req, res) => {
+  const { id } = req.params
+
   try {
-    const id = utils.parseUUID(req.params.id)
-    service.removeDataset(id)
-    res.status(204).send()
+    if (service.findDataset(id)) {
+      service.removeDataset(id)
+      res.status(204).send()
+    } else {
+      res.status(404).send()
+    }
   } catch (e) {
     res.status(400).send(e.message)
   }
@@ -48,7 +53,17 @@ const edit: RequestHandler = async (req, res) => {
       res.status(404).send('Dataset not found')
     }
 
-    const dataset = utils.toDataset(req.body)
+    let dataset = null
+    if (req.body.id === undefined) {
+      dataset = utils.toDataset({ ...req.body, id })
+    } else {
+      dataset = utils.toDataset(req.body)
+    }
+
+    if (dataset.id !== id) {
+      throw new Error(`ID in dataset ${dataset.id} is not the same as resource ID ${id}`)
+    }
+
     service.editDataset(id, dataset)
     res.json(dataset)
   } catch (e) {
