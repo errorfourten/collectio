@@ -64,7 +64,7 @@ type OptionProps = {name: unknown, quantity: unknown}
 const parseOption = ({ name, quantity }: OptionProps): DatasetOption => {
   if (!name) {
     throw new Error('Option name is required')
-  } else if (!quantity) {
+  } else if (quantity === undefined) {
     throw new Error('Option quantity is required')
   } else if (!isString(name)) {
     throw new Error(`Option name ${name} is not a string. Type is ${typeof name}`)
