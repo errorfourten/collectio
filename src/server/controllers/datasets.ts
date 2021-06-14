@@ -48,9 +48,9 @@ const remove: RequestHandler = async (req, res) => {
 
 const edit: RequestHandler = async (req, res) => {
   try {
-    const id = utils.parseUUID(req.params.id)
+    const { id } = req.params
     if (!service.findDataset(id)) {
-      res.status(404).send('Dataset not found')
+      return res.status(404).send('Dataset not found')
     }
 
     let dataset = null
@@ -65,9 +65,9 @@ const edit: RequestHandler = async (req, res) => {
     }
 
     service.editDataset(id, dataset)
-    res.json(dataset)
+    return res.json(dataset)
   } catch (e) {
-    res.status(400).send(e.message)
+    return res.status(400).send(e.message)
   }
 }
 
