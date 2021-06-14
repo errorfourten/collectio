@@ -9,7 +9,7 @@ const getAll: RequestHandler = async (_req, res) => {
 
 const getOne: RequestHandler = async (req, res) => {
   try {
-    const id = utils.parseUUID(req.params.id)
+    const { id } = req.params
     const dataset = service.findDataset(id)
     if (dataset) {
       res.json(dataset)
