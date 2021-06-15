@@ -3,7 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const sass = require('sass')
 const webpack = require('webpack')
 
-module.exports = (env, argv) => {
+type Generic = {[name: string]: string}
+
+module.exports = (_env: Generic, argv: Generic) => {
   const { mode } = argv
   const additionalPlugins = mode === 'production'
     ? []
@@ -16,7 +18,7 @@ module.exports = (env, argv) => {
   return {
     mode,
     entry: [
-      './src/client',
+      path.resolve(__dirname, 'client'),
       ...additionalEntries
     ],
     resolve: {

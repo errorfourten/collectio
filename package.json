@@ -2,11 +2,12 @@
   "name": "collectio",
   "version": "0.0.0",
   "description": "Manage all your machine learning datasets in one place",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register --ignore-watch ['src'] src/index.js",
-    "build": "webpack --mode=production",
-    "tsc": "tsc",
+    "start": "cross-env NODE_ENV=production node build/index.js",
+    "dev": "cross-env NODE_ENV=development ts-node-dev -r tsconfig-paths/register --ignore-watch ['src'] src/index.ts",
+    "build": "webpack --mode=production --config src/webpack.config.ts",
+    "tsc": "tsc && tsc-alias",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
     "test:server": "jest --verbose --runInBand --rootDir=src/server"
   },
@@ -45,7 +46,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.3",
-    "@babel/polyfill": "^7.12.1",
     "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.13.13",
     "@babel/preset-typescript": "^7.13.0",
@@ -71,6 +71,7 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.3.1",
     "jest": "^27.0.4",
+    "regenerator-runtime": "^0.13.7",
     "sass": "^1.34.0",
     "sass-loader": "^11.1.1",
     "style-loader": "^2.0.0",
@@ -78,6 +79,7 @@
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.2",
     "ts-node-dev": "^1.1.6",
+    "tsc-alias": "^1.3.2",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^4.3.2",
     "webpack": "^5.38.1",
@@ -93,5 +95,11 @@
       "^@util/(.*)$": "<rootDir>/util/$1",
       "^@services/(.*)$": "<rootDir>/services/$1"
     }
+  },
+  "_moduleAliases": {
+    "@root": "./src",
+    "@controllers": "src/server/controllers",
+    "@middleware": "src/server/middleware",
+    "@util": "src/server/util"
   }
 }
