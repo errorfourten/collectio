@@ -21,6 +21,25 @@ module.exports = (_env: Generic, argv: Generic) => {
       path.resolve(__dirname, 'client'),
       ...additionalEntries
     ],
+    output: {
+      filename: '[name].[contenthash].js'
+    },
+    optimization: {
+      moduleIds: 'deterministic',
+      runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: Infinity,
+        minSize: 0,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all'
+          }
+        }
+      }
+    },
     resolve: {
       alias: {
         Utilities: path.resolve(__dirname, 'client/util/'),
@@ -82,7 +101,7 @@ module.exports = (_env: Generic, argv: Generic) => {
         'process.env.NODE_ENV': JSON.stringify(mode)
       }),
       new HtmlWebpackPlugin({
-        template: 'src/index.html'
+        template: path.resolve(__dirname, 'index.html')
         // favicon: path.resolve(__dirname, 'client/assets/favicon-32x32.png')
       }),
       ...additionalPlugins
