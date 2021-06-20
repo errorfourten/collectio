@@ -30,6 +30,7 @@ const Options = ({ attributeIndex, formikProps }: OptionsProps) => {
                   <Form.Field width={8}>
                     <Form.Input
                       name={`attributes.${attributeIndex}.options.${index}.name`}
+                      aria-label={`Attributes #${attributeIndex} Options #${index} Name`}
                       placeholder="Option"
                       autoFocus={index !== 0}
                       value={formikProps.values.attributes && formikProps.values.attributes[attributeIndex]?.options[index]?.name}
@@ -52,6 +53,7 @@ const Options = ({ attributeIndex, formikProps }: OptionsProps) => {
                   <Form.Field width={5}>
                     <Form.Input
                       name={`attributes.${attributeIndex}.options.${index}.quantity`}
+                      aria-label={`Attributes #${attributeIndex} Options #${index} Quantity`}
                       placeholder="Quantity"
                       type="number"
                       value={formikProps.values.attributes && formikProps.values.attributes[attributeIndex]?.options[index]?.quantity}
@@ -72,11 +74,11 @@ const Options = ({ attributeIndex, formikProps }: OptionsProps) => {
                     />
                   </Form.Field>
                   {
-                    index !== 0 && <Form.Button icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
+                    index !== 0 && <Form.Button icon="cancel" type="button" aria-label={`Remove Attributes #${attributeIndex} Options #${index}`} onClick={() => arrayHelpers.remove(index)} />
                   }
                 </Form.Group>
               ))}
-              <Form.Button type="button" onClick={() => arrayHelpers.push({ name: '', quantity: '' })}>Add Option</Form.Button>
+              <Form.Button type="button" aria-label={`Attributes #${attributeIndex} Add Option`} onClick={() => arrayHelpers.push({ name: '', quantity: '' })}>Add Option</Form.Button>
             </div>
           )
         )
@@ -103,6 +105,7 @@ const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>})
                     <Form.Field width={8}>
                       <Form.Input
                         name={`attributes.${index}.name`}
+                        aria-label={`Attributes #${index} Name`}
                         placeholder="Attribute"
                         value={formikProps.values.attributes && formikProps.values.attributes[index].name}
                         error={formikProps.errors.attributes
@@ -117,7 +120,7 @@ const Attributes = ({ formikProps }: {formikProps: FormikProps<DatasetRawData>})
                         autoFocus
                       />
                     </Form.Field>
-                    <Form.Button negative icon="cancel" type="button" onClick={() => arrayHelpers.remove(index)} />
+                    <Form.Button negative icon="cancel" type="button" aria-label={`Remove Attributes #${index}`} onClick={() => arrayHelpers.remove(index)} />
                   </Form.Group>
                   <Options attributeIndex={index} formikProps={formikProps} />
                 </Segment>
@@ -182,7 +185,7 @@ const AddDatasetFormModal = ({
             <Message.Content style={{ minHeight: '0px' }}>{errorMessage}</Message.Content>
           </Message>
         )}
-        <Form.Field required>
+        <Form.Field required name="name">
           <label htmlFor="name">Dataset Name</label>
           <Form.Input
             name="name"

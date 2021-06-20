@@ -5,7 +5,14 @@
   },
   "extends": ["airbnb", "plugin:@typescript-eslint/recommended", "plugin:react/recommended"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "import", "jsx-a11y", "react"],
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "jsx-a11y",
+    "react",
+    "testing-library",
+    "jest-dom"
+  ],
   "rules": {
     "semi": [
       "error",
