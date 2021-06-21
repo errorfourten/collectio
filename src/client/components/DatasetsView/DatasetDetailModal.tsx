@@ -60,7 +60,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
         {dataset.name}
       </Modal.Header>
 
-      <Modal.Content style={{ minHeight: '0px' }}>
+      <Modal.Content>
         <Modal.Description>
           {dataset.description && <i>{dataset.description}</i>}
           <Header>Dataset Details</Header>
@@ -100,7 +100,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
         dimmer={{ style: { justifyContent: 'center' } }}
       >
         <Modal.Header>Delete Dataset</Modal.Header>
-        <Modal.Content style={{ minHeight: '0px' }}>
+        <Modal.Content>
           <p>Are you sure you want to delete <b>{dataset.name}</b>?</p>
         </Modal.Content>
         <Modal.Actions>

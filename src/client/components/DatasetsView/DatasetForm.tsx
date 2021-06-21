@@ -182,7 +182,7 @@ const AddDatasetFormModal = ({
             error
           >
             <Message.Header>Submission Error</Message.Header>
-            <Message.Content style={{ minHeight: '0px' }}>{errorMessage}</Message.Content>
+            <Message.Content>{errorMessage}</Message.Content>
           </Message>
         )}
         <Form.Field required name="name">
