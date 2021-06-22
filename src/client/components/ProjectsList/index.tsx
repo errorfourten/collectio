@@ -1,57 +1,15 @@
 import React, { MouseEvent, useState } from 'react'
+import { useQuery } from 'react-query'
 import { Accordion, Menu, MenuItemProps } from 'semantic-ui-react'
+import { getProjects } from 'Utilities/services/projects'
 import { ProjectsType, SubPanelType } from 'Utilities/types'
-
-const projects = {
-  projects: [
-    {
-      name: 'Project 1',
-      subProjects: [
-        {
-          name: 'Project 1-1',
-          subProjects: [
-            {
-              name: 'Project 1-1-1',
-              subProjects: [
-                {
-                  name: 'Project 1-1-1-1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          name: 'Project 1-2',
-          subProjects: [
-            {
-              name: 'Project 1-2-1'
-            },
-            {
-              name: 'Project 1-2-2'
-            }
-          ]
-        },
-        {
-          name: 'Project 1-3'
-        }
-      ]
-    },
-    {
-      name: 'Project 2',
-      subProjects: [
-        {
-          name: 'Project 2-1'
-        }
-      ]
-    },
-    {
-      name: 'Project 3'
-    }
-  ]
-}
 
 const ProjectsList = () => {
   const [activeItem, setActiveItem] = useState('')
+
+  const projectsQuery = useQuery<ProjectsType[], Error>('projects', getProjects)
+  if (!projectsQuery.data) { return null }
+  const projects = projectsQuery.data
 
   const handleClick = (_event: MouseEvent, data: MenuItemProps) => {
     const { name } = data
@@ -70,7 +28,7 @@ const ProjectsList = () => {
           const key = `${parentName}/////${project.name}`
           if (project.subProjects) {
             return (
-              <Menu.Item>
+              <Menu.Item key={`${key}-subProjects`}>
                 <Accordion.Accordion panels={subPanel(project as SubPanelType, key)} style={{ margin: '0 0 0 1em' }} />
               </Menu.Item>
             )
@@ -90,7 +48,7 @@ const ProjectsList = () => {
     </div>
   )
 
-  const projectsWithSubprojects = projects.projects.filter((project) => project.subProjects)
+  const projectsWithSubprojects = projects.filter((project) => project.subProjects)
   const rootPanel = projectsWithSubprojects.map((project) => (
     { key: project.name, title: project.name, content: { content: subContents(projectsWithSubprojects, project.name) } }
   ))
@@ -103,7 +61,7 @@ const ProjectsList = () => {
         </Menu.Item>
         <Accordion panels={rootPanel} fluid />
         {
-          projects.projects.map((project) => (
+          projects.map((project) => (
             !project.subProjects && (
               <Menu.Item
                 key={project.name}
