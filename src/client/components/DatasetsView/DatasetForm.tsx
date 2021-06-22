@@ -141,7 +141,7 @@ type ModalProps = {
   submitAction: (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => void
 }
 
-const AddDatasetFormModal = ({
+const DatasetForm = ({
   initialValues, errorMessage, formRef, submitAction
 }: ModalProps) => (
   <Formik
@@ -246,4 +246,4 @@ const AddDatasetFormModal = ({
   </Formik>
 )
 
-export default AddDatasetFormModal
+export default DatasetForm
