@@ -1,24 +1,10 @@
 $mainColor: whitesmoke;
 
-.navbar {
-  height: 5em;
-  background-color: $mainColor;
-  img {
-    height: 100%
-  }
+// ProjectsList
+.ui .menu .accordion div.item {
+  padding: 0.5em 1em
 }
 
-.content {
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.footer {
-  height: 5em;
-  background-color: $mainColor;
-  img {
-    height: 100%;
-    float: right
-  }
+.ui .menu .accordion .content.active {
+  padding: 0 0 0 !important
 }
