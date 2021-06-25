@@ -20,12 +20,12 @@ export interface Dataset {
 
 export type DatasetRawData = Omit<Dataset, 'id' | 'dateCreated'>
 
-export type ProjectsType = {
+export interface ProjectsType {
+  id: string,
   name: string
   subProjects?: ProjectsType[]
 }
 
-export type SubPanelType = {
-  name: string,
+export interface SubPanelType extends ProjectsType {
   subProjects: ProjectsType[]
 }
