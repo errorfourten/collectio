@@ -53,9 +53,10 @@ const ProjectsList = () => {
     </div>
   )
 
-  const projectsWithSubprojects = projects.filter((project) => project.subProjects)
+  const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects)
+  const projectsWithSubprojects = projects.filter(subProjectExists)
   const rootPanel = projectsWithSubprojects.map((project) => (
-    { key: project.name, title: project.name, content: { content: subContents(projectsWithSubprojects, project.name) } }
+    { key: project.name, title: project.name, content: { content: subContents(project.subProjects, project.name) } }
   ))
 
   return (
