@@ -20,8 +20,14 @@ export interface Dataset {
 
 export type DatasetRawData = Omit<Dataset, 'id' | 'dateCreated'>
 
-export type ProjectsType = {
+export type ProjectType = {
   id: string,
   name: string,
-  subProjects?: ProjectsType[]
+  dateCreated: Date,
+  subProjects?: ProjectType[]
+}
+
+export type NewProjectType = {
+  name: string,
+  parentProject?: ProjectType['id']
 }

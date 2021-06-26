@@ -1,5 +1,5 @@
 import {
-  Attribute, Dataset, DatasetRawData, Option as DatasetOption
+  Attribute, Dataset, DatasetRawData, NewProjectType, Option as DatasetOption
 } from '@util/types'
 import { validate as uuidValidate } from 'uuid'
 
@@ -142,8 +142,37 @@ const toDataset = ({
   }
 )
 
+const parseProjectName = (name: unknown): string => {
+  if (!name) {
+    throw new Error('Missing project name')
+  } else if (!isString(name)) {
+    throw new Error(`Project name ${name} is not a string. Type is ${typeof name}`)
+  }
+  return name
+}
+
+const parseParentProject = (parentProject: unknown): string => {
+  if (!isString(parentProject)) {
+    throw new Error(`Project parent ID ${parentProject} is not a string. Type is ${typeof parentProject}`)
+  }
+  return parentProject
+}
+
+type ValidateNewProjectFields = {
+  name: unknown,
+  parentProject: unknown
+}
+
+const toNewProject = ({ name, parentProject }: ValidateNewProjectFields): NewProjectType => (
+  {
+    name: parseProjectName(name),
+    ...(parentProject && { parentProject: parseParentProject(parentProject) }) as Record<string, unknown>
+  }
+)
+
 export default {
   toNewDataset,
   toDataset,
+  toNewProject,
   parseUUID
 }
