@@ -19,7 +19,11 @@ const watcher = chokidar.watch('@root/server')
 watcher.on('ready', () => {
   watcher.on('all', () => {
     Object.keys(require.cache).forEach((id) => {
-      if (id.includes('server')) delete require.cache[id]
+      if (id.includes('server')) {
+        delete require.cache[id]
+        // eslint-disable-next-line no-console
+        console.log('Backend reloaded')
+      }
     })
   })
 })
