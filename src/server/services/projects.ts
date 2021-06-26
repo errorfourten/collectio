@@ -98,6 +98,8 @@ const addProject = (newProjectData: NewProjectType): ProjectType => {
     const found = recursivelyAddToProjects(projects)
     if (!found) throw new Error(`Unable to find parentProject ${newProjectData.parentProject}`)
   } else {
+    const nameExists = projects.find((project) => project.name === newProjectData.name)
+    if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists`)
     projects.push(newProject)
   }
 
