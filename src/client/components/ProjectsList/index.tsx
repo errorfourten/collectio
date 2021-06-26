@@ -62,7 +62,7 @@ const ProjectsList = () => {
   return (
     <div>
       <Menu vertical>
-        <Menu.Item header>
+        <Menu.Item header style={{ display: 'flex', alignItems: 'center' }}>
           Projects
           <AddProjectModal />
         </Menu.Item>

@@ -50,7 +50,7 @@ const AddProjectModal = () => {
       onClose={handleClose}
       onOpen={() => setOpen(true)}
       open={open}
-      trigger={<Button primary icon size="mini"><Icon name="add" /></Button>}
+      trigger={<Button primary icon size="mini" style={{ marginLeft: 'auto' }}><Icon name="add" /></Button>}
     >
       <i
         role="button"
