@@ -78,6 +78,8 @@ const addProject = (newProjectData: NewProjectType): ProjectType => {
     toSearch.find((project) => {
       if (newProjectData.parentProject === project.id) {
         if (project.subProjects) {
+          const nameExists = project.subProjects.find((project) => project.name === newProjectData.name)
+          if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists for parent project ${project.name}`)
           project.subProjects.push(newProject)
         } else {
           // eslint-disable-next-line no-param-reassign
