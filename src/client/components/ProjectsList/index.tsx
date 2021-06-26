@@ -2,12 +2,17 @@ import React, { MouseEvent, useState } from 'react'
 import { useQuery } from 'react-query'
 import { Accordion, Menu, MenuItemProps } from 'semantic-ui-react'
 import { getProjects } from 'Utilities/services/projects'
-import { ProjectsType, SubPanelType } from 'Utilities/types'
+import { ProjectType } from 'Utilities/types'
+import AddProjectModal from 'Components/ProjectsList/AddProjectModal'
+
+interface SubPanelType extends ProjectType {
+  subProjects: ProjectType[]
+}
 
 const ProjectsList = () => {
   const [activeItem, setActiveItem] = useState('')
 
-  const projectsQuery = useQuery<ProjectsType[], Error>('projects', getProjects)
+  const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
   if (!projectsQuery.data) { return null }
   const projects = projectsQuery.data
 
@@ -21,7 +26,7 @@ const ProjectsList = () => {
     [{ key: project.name, title: project.name, content: { content: subContents(project.subProjects, parentName) } }]
   )
 
-  const subContents = (projects: ProjectsType[], parentName: string) => (
+  const subContents = (projects: ProjectType[], parentName: string) => (
     <div>
       {
         projects.map((project) => {
@@ -58,6 +63,7 @@ const ProjectsList = () => {
       <Menu vertical>
         <Menu.Item header>
           Projects
+          <AddProjectModal />
         </Menu.Item>
         <Accordion panels={rootPanel} fluid />
         {
