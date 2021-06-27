@@ -12,5 +12,6 @@ router.put('/datasets/:id', datasetsController.edit)
 
 router.get('/projects', projectsController.getAll)
 router.post('/projects', projectsController.create)
+router.delete('/projects/:id', projectsController.remove)
 
 export default router

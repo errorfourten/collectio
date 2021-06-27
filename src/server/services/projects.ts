@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid'
 import { NewProjectType, ProjectType } from '@util/types'
 
-const projects: Array<ProjectType> = [
+let projects: Array<ProjectType> = [
   {
     id: '1779e45d-b740-4bc9-b57b-b62c06f51839',
     name: 'Project 1',
@@ -106,7 +106,20 @@ const addProject = (newProjectData: NewProjectType): ProjectType => {
   return newProject
 }
 
+const deleteProject = (toDeleteId: ProjectType['id']) => {
+  // not the most efficient way since it doesn't return immediately when found
+  projects = projects.filter(function recursiveFilter(project): boolean | number {
+    if (project.subProjects) {
+      // eslint-disable-next-line no-param-reassign
+      project.subProjects = project.subProjects.filter(recursiveFilter)
+    }
+    if (project.id !== toDeleteId) return true
+    return false
+  })
+}
+
 export default {
   allProjects,
-  addProject
+  addProject,
+  deleteProject
 }
