@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { v4 as uuid } from 'uuid'
 import { NewProjectType, ProjectType } from '@util/types'
 
@@ -110,12 +111,13 @@ const deleteProject = (toDeleteId: ProjectType['id']) => {
   // not the most efficient way since it doesn't return immediately when found
   projects = projects.filter(function recursiveFilter(project): boolean | number {
     if (project.subProjects) {
-      // eslint-disable-next-line no-param-reassign
       project.subProjects = project.subProjects.filter(recursiveFilter)
     }
     if (project.id !== toDeleteId) return true
     return false
   })
+
+  // if (!found) throw new Error(`Unable to find project ${toDeleteId}`)
 }
 
 export default {
