@@ -1,12 +1,80 @@
-import React, { MouseEvent, useState } from 'react'
+import React, { useState, MouseEvent } from 'react'
 import { useQuery } from 'react-query'
-import { Accordion, Menu, MenuItemProps } from 'semantic-ui-react'
+import {
+  Accordion, Menu, MenuItemProps, Popup
+} from 'semantic-ui-react'
 import { getProjects } from 'Utilities/services/projects'
 import { ProjectType } from 'Utilities/types'
 import AddProjectModal from 'Components/ProjectsList/AddProjectModal'
+import DeleteProjectModal from 'Components/ProjectsList/DeleteProjectModal'
 
 interface SubPanelType extends ProjectType {
   subProjects: ProjectType[]
+}
+
+type ProjectItemType = {
+  itemKey: string,
+  active: boolean,
+  onClick: (event: MouseEvent, data: MenuItemProps) => void,
+  displayName: string
+}
+
+const ProjectItem = ({
+  itemKey, active, onClick, displayName
+}: ProjectItemType) => {
+  const [open, setOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+
+  return (
+    <>
+      <DeleteProjectModal
+        itemKey={itemKey}
+        displayName={displayName}
+        open={deleteModalOpen}
+        setOpen={setDeleteModalOpen}
+      />
+      <Popup
+        size="mini"
+        trigger={(
+          <Menu.Item
+            key={itemKey}
+            name={itemKey}
+            active={active}
+            onClick={onClick}
+            onContextMenu={(e: MouseEvent) => {
+              e.preventDefault()
+              setOpen(true)
+            }}
+          >
+            {displayName}
+          </Menu.Item>
+        )}
+        onClose={() => setOpen(false)}
+        open={open}
+        position="right center"
+        closeOnEscape
+        closeOnPortalMouseLeave
+        closeOnDocumentClick
+      >
+        <Menu
+          secondary
+          vertical
+          compact
+        >
+          <Menu.Item name="edit">Edit</Menu.Item>
+          <Menu.Item
+            name="delete"
+            onClick={() => {
+              setDeleteModalOpen(true)
+              setOpen(false)
+            }}
+          >
+            Delete
+          </Menu.Item>
+        </Menu>
+      </Popup>
+    </>
+  )
 }
 
 const ProjectsList = () => {
@@ -22,31 +90,30 @@ const ProjectsList = () => {
     if (name) { setActiveItem(name) }
   }
 
-  const subPanel = (project: SubPanelType, parentName: string) => (
-    [{ key: project.name, title: project.name, content: { content: subContents(project.subProjects, parentName) } }]
+  const subPanel = (project: SubPanelType) => (
+    [{ key: `${project.id}-subPanel`, title: project.name, content: { content: subContents(project.subProjects) } }]
   )
 
-  const subContents = (projects: ProjectType[], parentName: string) => (
+  const subContents = (projects: ProjectType[]) => (
     <div>
       {
         projects.map((project) => {
-          const key = `${parentName}/////${project.name}`
           if (project.subProjects) {
             return (
-              <Menu.Item key={`${key}-subProjects`}>
-                <Accordion.Accordion panels={subPanel(project as SubPanelType, key)} style={{ margin: '0 0 0 1em' }} />
+              <Menu.Item key={`${project.id}-subProjects`}>
+                <Accordion.Accordion panels={subPanel(project as SubPanelType)} style={{ margin: '0 0 0 1em' }} />
               </Menu.Item>
             )
           }
+
           return (
-            <Menu.Item
-              key={key}
-              name={key}
-              active={activeItem === key}
+            <ProjectItem
+              key={project.id}
+              itemKey={project.id}
+              active={activeItem === project.id}
               onClick={handleClick}
-            >
-              {project.name}
-            </Menu.Item>
+              displayName={project.name}
+            />
           )
         })
       }
@@ -56,7 +123,7 @@ const ProjectsList = () => {
   const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects)
   const projectsWithSubprojects = projects.filter(subProjectExists)
   const rootPanel = projectsWithSubprojects.map((project) => (
-    { key: project.name, title: project.name, content: { content: subContents(project.subProjects, project.name) } }
+    { key: `${project.id}-subPanel`, title: project.name, content: { content: subContents(project.subProjects) } }
   ))
 
   return (
@@ -70,14 +137,13 @@ const ProjectsList = () => {
         {
           projects.map((project) => (
             !project.subProjects && (
-              <Menu.Item
-                key={project.name}
-                name={project.name}
-                active={activeItem === project.name}
+              <ProjectItem
+                key={project.id}
+                itemKey={project.id}
+                active={activeItem === project.id}
                 onClick={handleClick}
-              >
-                {project.name}
-              </Menu.Item>
+                displayName={project.name}
+              />
             )))
         }
       </Menu>
