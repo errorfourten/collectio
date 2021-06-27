@@ -1,7 +1,7 @@
 import React, { useState, MouseEvent } from 'react'
 import { useQuery } from 'react-query'
 import {
-  Accordion, Menu, MenuItemProps, Popup
+  Accordion, Menu, MenuItemProps, Popup, Icon
 } from 'semantic-ui-react'
 import { getProjects } from 'Utilities/services/projects'
 import { ProjectType } from 'Utilities/types'
@@ -12,16 +12,15 @@ interface SubPanelType extends ProjectType {
   subProjects: ProjectType[]
 }
 
-type ProjectItemType = {
+type ContextMenuWrapperType = {
   itemKey: string,
-  active: boolean,
-  onClick: (event: MouseEvent, data: MenuItemProps) => void,
-  displayName: string
+  displayName: string,
+  children: React.ReactElement
 }
 
-const ProjectItem = ({
-  itemKey, active, onClick, displayName
-}: ProjectItemType) => {
+const ContextMenuWrapper = ({
+  itemKey, displayName, children
+}: ContextMenuWrapperType) => {
   const [open, setOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
@@ -35,20 +34,14 @@ const ProjectItem = ({
       />
       <Popup
         size="mini"
-        trigger={(
-          <Menu.Item
-            key={itemKey}
-            name={itemKey}
-            active={active}
-            onClick={onClick}
-            onContextMenu={(e: MouseEvent) => {
+        trigger={
+          React.cloneElement(children, {
+            onContextMenu: (e: Event) => {
               e.preventDefault()
               setOpen(true)
-            }}
-          >
-            {displayName}
-          </Menu.Item>
-        )}
+            }
+          })
+        }
         onClose={() => setOpen(false)}
         open={open}
         position="right center"
@@ -77,8 +70,12 @@ const ProjectItem = ({
   )
 }
 
+type ActiveItemType = {
+  [depth: number]: string
+}
+
 const ProjectsList = () => {
-  const [activeItem, setActiveItem] = useState('')
+  const [activeItem, setActiveItem] = useState<ActiveItemType>({})
 
   const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
   if (!projectsQuery.data) { return null }
@@ -90,41 +87,71 @@ const ProjectsList = () => {
     if (name) { setActiveItem(name) }
   }
 
-  const subPanel = (project: SubPanelType) => (
-    [{ key: `${project.id}-subPanel`, title: project.name, content: { content: subContents(project.subProjects) } }]
-  )
+  const subContents = (projects: ProjectType[], depth: number) => {
+    const handleAccordionClick = (id: string) => {
+      // If a child in a new parent is clicked, collapse all children of original parent
+      const newItems: ActiveItemType = {}
+      Object.entries(activeItem).forEach(([key, value]) => {
+        if (depth > Number(key)) { newItems[Number(key)] = value }
+      })
 
-  const subContents = (projects: ProjectType[]) => (
-    <div>
-      {
-        projects.map((project) => {
-          if (project.subProjects) {
+      // Close open accordion if it is clicked again
+      if (activeItem[depth] === id) setActiveItem({ ...newItems, [depth]: '' })
+      else setActiveItem({ ...newItems, [depth]: id })
+    }
+
+    return (
+      <div>
+        {
+          projects.map((project) => {
+            if (project.subProjects) {
+              return (
+                <Menu.Item key={`${project.id}-subProjects`}>
+                  <Accordion style={(depth === 0) ? { margin: '0' } : { margin: '0 0 0 1em' }}>
+                    <ContextMenuWrapper
+                      itemKey={project.id}
+                      displayName={project.name}
+                    >
+                      <Accordion.Title
+                        active={activeItem[depth] === project.id}
+                        index={project.id}
+                        onClick={() => handleAccordionClick(project.id)}
+                      >
+                        <Icon name="dropdown" />
+                        {project.name}
+                      </Accordion.Title>
+                    </ContextMenuWrapper>
+                    <Accordion.Content active={activeItem[depth] === project.id}>
+                      {subContents(project.subProjects, depth + 1)}
+                    </Accordion.Content>
+                  </Accordion>
+                </Menu.Item>
+              )
+            }
+
             return (
-              <Menu.Item key={`${project.id}-subProjects`}>
-                <Accordion.Accordion panels={subPanel(project as SubPanelType)} style={{ margin: '0 0 0 1em' }} />
-              </Menu.Item>
+              <ContextMenuWrapper
+                key={project.id}
+                itemKey={project.id}
+                displayName={project.name}
+              >
+                <Menu.Item
+                  name={project.id}
+                  active={activeItem[depth] === project.id}
+                  onClick={handleClick}
+                >
+                  {project.name}
+                </Menu.Item>
+              </ContextMenuWrapper>
             )
-          }
-
-          return (
-            <ProjectItem
-              key={project.id}
-              itemKey={project.id}
-              active={activeItem === project.id}
-              onClick={handleClick}
-              displayName={project.name}
-            />
-          )
-        })
-      }
-    </div>
-  )
+          })
+        }
+      </div>
+    )
+  }
 
   const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects)
   const projectsWithSubprojects = projects.filter(subProjectExists)
-  const rootPanel = projectsWithSubprojects.map((project) => (
-    { key: `${project.id}-subPanel`, title: project.name, content: { content: subContents(project.subProjects) } }
-  ))
 
   return (
     <div>
@@ -133,17 +160,26 @@ const ProjectsList = () => {
           Projects
           <AddProjectModal />
         </Menu.Item>
-        <Accordion panels={rootPanel} fluid />
+        <Accordion fluid>
+          {subContents(projectsWithSubprojects, 0)}
+        </Accordion>
+
         {
           projects.map((project) => (
             !project.subProjects && (
-              <ProjectItem
+              <ContextMenuWrapper
                 key={project.id}
                 itemKey={project.id}
-                active={activeItem === project.id}
-                onClick={handleClick}
                 displayName={project.name}
-              />
+              >
+                <Menu.Item
+                  name={project.id}
+                  active={activeItem[0] === project.id}
+                  onClick={handleClick}
+                >
+                  {project.name}
+                </Menu.Item>
+              </ContextMenuWrapper>
             )))
         }
       </Menu>
