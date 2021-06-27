@@ -51,6 +51,7 @@ const DeleteProjectModal = ({
         <p>Are you sure you want to delete {displayName}? This will delete all subprojects and any associated datasets!</p>
         <p>Please type <b>{displayName}</b> to confirm.</p>
         <Input
+          fluid
           placeholder={displayName}
           onChange={(e) => {
             if (e.target.value === displayName) setDisabled(false)
