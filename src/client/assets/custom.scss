@@ -1,10 +1,39 @@
 $mainColor: whitesmoke;
 
-// ProjectsList
-.ui .menu .accordion div.item {
-  padding: 0.5em 1em
+/*
+  Project List
+*/
+
+// Left indent for item
+.ui.menu .accordion div.item {
+  padding: 0 0 0 1em;
 }
 
-.ui .menu .accordion .content.active {
-  padding: 0 0 0 !important
+.ui.menu .accordion .content.active {
+  padding: 0 !important
+}
+
+// Align both dropdown triangle and project title
+.ui.menu .accordion .item .title {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+// Increases padding for project title in accordion
+.ui.menu .accordion .item .title .item {
+  display: inline;
+  width: calc(100% - 1.5em) // icon width is 1.5em
+}
+
+// Removes border of project title
+.ui.menu .accordion .item .title .item:before{
+  display: inline;
+  background: none
+}
+
+// Adds hover for project title
+.ui.menu .accordion .item .title .item:hover {
+  background: rgba(0,0,0,.03);
+  color: rgba(0,0,0,.95);
 }

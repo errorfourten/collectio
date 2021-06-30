@@ -1,7 +1,7 @@
 import React, { useState, MouseEvent } from 'react'
 import { useQuery } from 'react-query'
 import {
-  Accordion, Menu, MenuItemProps, Popup, Icon
+  Accordion, Menu, MenuItemProps, Popup, Icon, AccordionTitleProps
 } from 'semantic-ui-react'
 import { getProjects } from 'Utilities/services/projects'
 import { ProjectType } from 'Utilities/types'
@@ -81,7 +81,7 @@ const ProjectsList = () => {
   if (!projectsQuery.data) { return null }
   const projects = projectsQuery.data
 
-  const handleClick = (_event: MouseEvent, data: MenuItemProps) => {
+  const handleClick = (_event: MouseEvent, data: MenuItemProps | AccordionTitleProps) => {
     const { name } = data
     console.log(name)
     if (name) { setActiveItem(name) }
@@ -106,19 +106,27 @@ const ProjectsList = () => {
           projects.map((project) => {
             if (project.subProjects) {
               return (
-                <Menu.Item key={`${project.id}-subProjects`}>
-                  <Accordion style={(depth === 0) ? { margin: '0' } : { margin: '0 0 0 1em' }}>
+                <Menu.Item
+                  key={`${project.id}-subProjects`}
+                >
+                  <Accordion style={{ margin: '0' }}>
                     <ContextMenuWrapper
                       itemKey={project.id}
                       displayName={project.name}
                     >
                       <Accordion.Title
                         active={activeItem[depth] === project.id}
-                        index={project.id}
-                        onClick={() => handleAccordionClick(project.id)}
                       >
-                        <Icon name="dropdown" />
-                        {project.name}
+                        <Icon
+                          name="dropdown"
+                          onClick={() => handleAccordionClick(project.id)}
+                        />
+                        <Menu.Item
+                          name={project.id}
+                          onClick={handleClick}
+                        >
+                          {project.name}
+                        </Menu.Item>
                       </Accordion.Title>
                     </ContextMenuWrapper>
                     <Accordion.Content active={activeItem[depth] === project.id}>
@@ -137,7 +145,6 @@ const ProjectsList = () => {
               >
                 <Menu.Item
                   name={project.id}
-                  active={activeItem[depth] === project.id}
                   onClick={handleClick}
                 >
                   {project.name}
@@ -174,7 +181,6 @@ const ProjectsList = () => {
               >
                 <Menu.Item
                   name={project.id}
-                  active={activeItem[0] === project.id}
                   onClick={handleClick}
                 >
                   {project.name}
