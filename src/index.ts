@@ -1,9 +1,12 @@
+/* eslint-disable import/first */
+import dotenv from 'dotenv'
+
+dotenv.config()
 import common from '@util/common'
 import { NextFunction, Request, Response } from 'express'
 
 const { PORT, inProduction } = common
 
-require('dotenv').config()
 require('module-alias/register')
 const chokidar = require('chokidar')
 const express = require('express')
