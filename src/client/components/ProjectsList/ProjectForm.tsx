@@ -38,7 +38,7 @@ const ProjectForm = ({
   initialValues, errorMessage, formRef, submitAction
 }: ModalProps) => {
   const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
-  const projects = projectsQuery.data ? projectsQuery.data : null
+  const projects = (Array.isArray(projectsQuery.data) && projectsQuery.data.length > 0) ? projectsQuery.data : null
 
   useEffect(() => {
     projectOptions = []

@@ -78,7 +78,7 @@ const ProjectsList = () => {
   const [activeItem, setActiveItem] = useState<ActiveItemType>({})
 
   const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
-  const projects = projectsQuery.data ? projectsQuery.data : null
+  const projects = (Array.isArray(projectsQuery.data) && projectsQuery.data.length > 0) ? projectsQuery.data : null
 
   const handleClick = (_event: MouseEvent, data: MenuItemProps | AccordionTitleProps) => {
     const { name } = data
