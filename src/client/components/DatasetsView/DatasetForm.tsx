@@ -1,16 +1,39 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
-  Header, Segment, Form, Message
+  Header, Segment, Form, Message, DropdownProps
 } from 'semantic-ui-react'
-import { DatasetRawData, Attribute } from 'Utilities/types'
+import { DatasetRawData, Attribute, ProjectType } from 'Utilities/types'
 import {
   Formik, FieldArray, useFormikContext, FormikProps, FormikHelpers
 } from 'formik'
 import * as Yup from 'yup'
+import { useQuery } from 'react-query'
+import { getProjects } from 'Utilities/services/projects'
 
 interface OptionsProps {
   attributeIndex: number,
   formikProps: FormikProps<DatasetRawData>
+}
+
+type ProjectOptions = {
+  key: ProjectType['id'],
+  value: ProjectType['id'],
+  text: ProjectType['name']
+}
+
+let projectOptions: ProjectOptions[] = []
+const createDropdown = (project: ProjectType, parentName: string): void => {
+  if (!parentName) {
+    projectOptions.push({ key: project.name, value: project.id, text: project.name })
+    if (project.subProjects) {
+      project.subProjects.map((p) => createDropdown(p, `${project.name}`))
+    }
+  } else {
+    projectOptions.push({ key: `${parentName} / ${project.name}`, value: project.id, text: `${parentName} / ${project.name}` })
+    if (project.subProjects) {
+      project.subProjects.map((p) => createDropdown(p, `${parentName} / ${project.name}`))
+    }
+  }
 }
 
 const Options = ({ attributeIndex, formikProps }: OptionsProps) => {
@@ -143,107 +166,125 @@ type ModalProps = {
 
 const DatasetForm = ({
   initialValues, errorMessage, formRef, submitAction
-}: ModalProps) => (
-  <Formik
-    initialValues={initialValues}
-    onSubmit={(values, { setSubmitting }) => submitAction(values, setSubmitting)}
-    innerRef={formRef}
-    validationSchema={Yup.object({
-      name: Yup.string().required('Required').trim(),
-      project: Yup.string().trim(),
-      description: Yup.string().trim(),
-      notes: Yup.string().trim(),
-      attributes: Yup.array()
-        .of(
-          Yup.object().shape({
-            name: Yup.string().required('Required').trim(),
-            options: Yup.array()
-              .of(
-                Yup.object().shape({
-                  name: Yup.string().required('Required').trim(),
-                  quantity: Yup.number()
-                    .required('Required')
-                    .min(0, 'Must be at least 0')
-                    .integer('Must be an integer')
-                })
-              )
-          })
-        )
-    })}
-  >
-    {(formikProps) => (
-      <Form
-        onSubmit={formikProps.handleSubmit}
-        loading={formikProps.isSubmitting}
-        error={errorMessage !== ''}
-      >
-        {errorMessage && (
-          <Message
-            error
-          >
-            <Message.Header>Submission Error</Message.Header>
-            <Message.Content>{errorMessage}</Message.Content>
-          </Message>
-        )}
-        <Form.Field required name="name">
-          <label htmlFor="name">Dataset Name</label>
-          <Form.Input
-            name="name"
-            type="text"
-            id="name"
-            value={formikProps.values.name}
-            error={formikProps.errors.name}
+}: ModalProps) => {
+  const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
+  const projects = projectsQuery.data ? projectsQuery.data : null
+
+  useEffect(() => {
+    projectOptions = []
+    if (projects) projects.map((project) => createDropdown(project, ''))
+  }, [])
+
+  const handleDropdownChange = (data: DropdownProps, formikProps: FormikProps<DatasetRawData>) => {
+    formikProps.setFieldValue('project', data.value)
+  }
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      onSubmit={(values, { setSubmitting }) => submitAction(values, setSubmitting)}
+      innerRef={formRef}
+      validationSchema={Yup.object({
+        name: Yup.string().required('Required').trim(),
+        project: Yup.string().trim(),
+        description: Yup.string().trim(),
+        notes: Yup.string().trim(),
+        attributes: Yup.array()
+          .of(
+            Yup.object().shape({
+              name: Yup.string().required('Required').trim(),
+              options: Yup.array()
+                .of(
+                  Yup.object().shape({
+                    name: Yup.string().required('Required').trim(),
+                    quantity: Yup.number()
+                      .required('Required')
+                      .min(0, 'Must be at least 0')
+                      .integer('Must be an integer')
+                  })
+                )
+            })
+          )
+      })}
+    >
+      {(formikProps) => (
+        <Form
+          onSubmit={formikProps.handleSubmit}
+          loading={formikProps.isSubmitting}
+          error={errorMessage !== ''}
+        >
+          {errorMessage && (
+            <Message
+              error
+            >
+              <Message.Header>Submission Error</Message.Header>
+              <Message.Content>{errorMessage}</Message.Content>
+            </Message>
+          )}
+          <Form.Field required name="name">
+            <label htmlFor="name">Dataset Name</label>
+            <Form.Input
+              name="name"
+              type="text"
+              id="name"
+              value={formikProps.values.name}
+              error={formikProps.errors.name}
+              onChange={formikProps.handleChange}
+              onBlur={formikProps.handleBlur}
+              onSubmit={formikProps.handleSubmit}
+              onReset={formikProps.handleReset}
+              autoFocus
+            />
+          </Form.Field>
+          <Form.Field>
+            <label htmlFor="project">Project</label>
+            <Form.Dropdown
+              name="parentProject"
+              type="text"
+              id="parentProject"
+              placeholder={projects ? 'Select Parent Project' : 'Create a Project First!'}
+              fluid
+              selection
+              clearable
+              search
+              options={projectOptions}
+              value={formikProps.values.project}
+              error={projects ? formikProps.errors.project : true}
+              onChange={(_e, data) => handleDropdownChange(data, formikProps)}
+              onBlur={formikProps.handleBlur('parentProject')}
+            />
+          </Form.Field>
+          <Form.TextArea
+            name="description"
+            label="Description"
+            id="description"
+            rows="1"
+            placeholder="A short description of this dataset"
+            value={formikProps.values.description}
+            error={formikProps.errors.description}
             onChange={formikProps.handleChange}
             onBlur={formikProps.handleBlur}
             onSubmit={formikProps.handleSubmit}
             onReset={formikProps.handleReset}
-            autoFocus
           />
-        </Form.Field>
-        <Form.Field>
-          <label htmlFor="project">Project</label>
-          <Form.Input
-            name="project"
-            type="text"
-            id="project"
-            value={formikProps.values.project}
-            error={formikProps.errors.project}
+          <Attributes formikProps={formikProps} />
+          <Form.TextArea
+            name="notes"
+            label="Notes"
+            id="notes"
+            rows="4"
+            placeholder="Any additional notes"
+            value={formikProps.values.notes}
+            error={formikProps.errors.notes}
             onChange={formikProps.handleChange}
             onBlur={formikProps.handleBlur}
             onSubmit={formikProps.handleSubmit}
             onReset={formikProps.handleReset}
           />
-        </Form.Field>
-        <Form.TextArea
-          name="description"
-          label="Description"
-          id="description"
-          rows="1"
-          placeholder="A short description of this dataset"
-          value={formikProps.values.description}
-          error={formikProps.errors.description}
-          onChange={formikProps.handleChange}
-          onBlur={formikProps.handleBlur}
-          onSubmit={formikProps.handleSubmit}
-          onReset={formikProps.handleReset}
-        />
-        <Attributes formikProps={formikProps} />
-        <Form.TextArea
-          name="notes"
-          label="Notes"
-          id="notes"
-          rows="4"
-          placeholder="Any additional notes"
-          value={formikProps.values.notes}
-          error={formikProps.errors.notes}
-          onChange={formikProps.handleChange}
-          onBlur={formikProps.handleBlur}
-          onSubmit={formikProps.handleSubmit}
-          onReset={formikProps.handleReset}
-        />
-      </Form>
-    )}
-  </Formik>
-)
+        </Form>
+      )}
+    </Formik>
+  )
+}
 
 export default DatasetForm
