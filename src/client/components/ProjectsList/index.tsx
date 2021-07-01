@@ -78,8 +78,7 @@ const ProjectsList = () => {
   const [activeItem, setActiveItem] = useState<ActiveItemType>({})
 
   const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
-  if (!projectsQuery.data) { return null }
-  const projects = projectsQuery.data
+  const projects = projectsQuery.data ? projectsQuery.data : null
 
   const handleClick = (_event: MouseEvent, data: MenuItemProps | AccordionTitleProps) => {
     const { name } = data
@@ -158,7 +157,6 @@ const ProjectsList = () => {
   }
 
   const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects)
-  const projectsWithSubprojects = projects.filter(subProjectExists)
 
   return (
     <div>
@@ -167,27 +165,37 @@ const ProjectsList = () => {
           Projects
           <AddProjectModal />
         </Menu.Item>
-        <Accordion fluid>
-          {subContents(projectsWithSubprojects, 0)}
-        </Accordion>
+        {projects
+          ? (
+            <>
+              <Accordion fluid>
+                {subContents(projects.filter(subProjectExists), 0)}
+              </Accordion>
 
-        {
-          projects.map((project) => (
-            !project.subProjects && (
-              <ContextMenuWrapper
-                key={project.id}
-                itemKey={project.id}
-                displayName={project.name}
-              >
-                <Menu.Item
-                  name={project.id}
-                  onClick={handleClick}
-                >
-                  {project.name}
-                </Menu.Item>
-              </ContextMenuWrapper>
-            )))
-        }
+              {
+                projects.map((project) => (
+                  !project.subProjects && (
+                    <ContextMenuWrapper
+                      key={project.id}
+                      itemKey={project.id}
+                      displayName={project.name}
+                    >
+                      <Menu.Item
+                        name={project.id}
+                        onClick={handleClick}
+                      >
+                        {project.name}
+                      </Menu.Item>
+                    </ContextMenuWrapper>
+                  )))
+              }
+            </>
+          )
+          : (
+            <Menu.Item>
+              No projects found. Create a new project!
+            </Menu.Item>
+          )}
       </Menu>
     </div>
   )
