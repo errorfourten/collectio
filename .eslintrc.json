@@ -22,6 +22,7 @@
     "no-shadow": 0,
     "no-plusplus": 0,
     "comma-dangle": ["error", "never"],
+    "no-underscore-dangle": "off",
     "no-use-before-define": "off",
     "import/no-unresolved": "off",
     "import/no-extraneous-dependencies": [

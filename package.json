@@ -37,6 +37,7 @@
     "fomantic-ui-css": "^2.8.7",
     "formik": "^2.2.9",
     "module-alias": "^2.2.2",
+    "mongoose": "^5.13.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-query": "^3.16.0",
@@ -111,6 +112,7 @@
       "^@middleware/(.*)$": "<rootDir>/src/server/middleware/$1",
       "^@util/(.*)$": "<rootDir>/src/server/util/$1",
       "^@services/(.*)$": "<rootDir>/src/server/services/$1",
+      "^@models/(.*)$": "<rootDir>/src/server/models/$1",
       "^Components/(.*)$": "<rootDir>/src/client/components/$1",
       "^Utilities/(.*)$": "<rootDir>/src/client/util/$1",
       "^Assets/(.*)$": "<rootDir>/src/client/assets/$1"
@@ -120,6 +122,7 @@
     "@root": "./src",
     "@controllers": "src/server/controllers",
     "@middleware": "src/server/middleware",
-    "@util": "src/server/util"
+    "@util": "src/server/util",
+    "@models": "src/server/models"
   }
 }
