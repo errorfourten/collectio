@@ -38,12 +38,11 @@ const ProjectForm = ({
   initialValues, errorMessage, formRef, submitAction
 }: ModalProps) => {
   const projectsQuery = useQuery<ProjectType[], Error>('projects', getProjects)
-  if (!projectsQuery.data) { return null }
-  const projects = projectsQuery.data
+  const projects = projectsQuery.data ? projectsQuery.data : null
 
   useEffect(() => {
     projectOptions = []
-    projects.map((project) => createDropdown(project, ''))
+    if (projects) projects.map((project) => createDropdown(project, ''))
   }, [])
 
   const handleDropdownChange = (data: DropdownProps, formikProps: FormikProps<NewProjectType>) => {
@@ -86,24 +85,27 @@ const ProjectForm = ({
               autoFocus
             />
           </Form.Field>
-          <Form.Field>
-            <label htmlFor="parentProject">Parent Project</label>
-            <Form.Dropdown
-              name="parentProject"
-              type="text"
-              id="parentProject"
-              placeholder="Select Parent Project"
-              fluid
-              selection
-              clearable
-              search
-              options={projectOptions}
-              value={formikProps.values.parentProject}
-              error={formikProps.errors.parentProject}
-              onChange={(_e, data) => handleDropdownChange(data, formikProps)}
-              onBlur={formikProps.handleBlur('parentProject')}
-            />
-          </Form.Field>
+          {projects
+            && (
+            <Form.Field>
+              <label htmlFor="parentProject">Parent Project</label>
+              <Form.Dropdown
+                name="parentProject"
+                type="text"
+                id="parentProject"
+                placeholder="Select Parent Project"
+                fluid
+                selection
+                clearable
+                search
+                options={projectOptions}
+                value={formikProps.values.parentProject}
+                error={formikProps.errors.parentProject}
+                onChange={(_e, data) => handleDropdownChange(data, formikProps)}
+                onBlur={formikProps.handleBlur('parentProject')}
+              />
+            </Form.Field>
+            )}
         </Form>
       )}
     </Formik>
