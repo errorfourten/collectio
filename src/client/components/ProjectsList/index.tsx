@@ -135,21 +135,28 @@ const ProjectsList = () => {
                 </Menu.Item>
               )
             }
-
-            return (
-              <ContextMenuWrapper
-                key={project.id}
-                itemKey={project.id}
-                displayName={project.name}
-              >
-                <Menu.Item
-                  name={project.id}
-                  onClick={handleClick}
+            return null
+          })
+        }
+        {
+          projects.map((project) => {
+            if (!project.subProjects.length) {
+              return (
+                <ContextMenuWrapper
+                  key={project.id}
+                  itemKey={project.id}
+                  displayName={project.name}
                 >
-                  {project.name}
-                </Menu.Item>
-              </ContextMenuWrapper>
-            )
+                  <Menu.Item
+                    name={project.id}
+                    onClick={handleClick}
+                  >
+                    {project.name}
+                  </Menu.Item>
+                </ContextMenuWrapper>
+              )
+            }
+            return null
           })
         }
       </div>
