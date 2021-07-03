@@ -9,6 +9,12 @@ const allProjects = async () => {
   return projects
 }
 
+const oneProject = async (id: string) => {
+  const project = await Project.findById(id)
+  if (!project) throw new NotFoundError(`Project ${id} does not exist`)
+  return project
+}
+
 const addProject = async (data: NewProjectType): Promise<ProjectType> => {
   const project = new Project({ name: data.name, parentProject: data.parentProject })
   const response = await project.save()
@@ -29,6 +35,7 @@ const updateProject = async (id: string, data: NewProjectType) => {
 
 export default {
   allProjects,
+  oneProject,
   addProject,
   deleteProject,
   updateProject

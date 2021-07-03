@@ -7,6 +7,15 @@ const getAll: RequestHandler = async (_req, res) => {
   res.json(projects)
 }
 
+const getOne: RequestHandler = async (req, res, next) => {
+  try {
+    const project = await service.oneProject(req.params.id)
+    res.json(project)
+  } catch (error) {
+    next(error)
+  }
+}
+
 const create: RequestHandler = async (req, res, next) => {
   try {
     const newProject = utils.toNewProject(req.body)
@@ -38,6 +47,7 @@ const update: RequestHandler = async (req, res, next) => {
 
 export default {
   getAll,
+  getOne,
   create,
   remove,
   update
