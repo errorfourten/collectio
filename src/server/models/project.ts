@@ -32,8 +32,13 @@ ProjectSchema.set('toJSON', {
   }
 })
 
-ProjectSchema.pre('find', function populate() {
+ProjectSchema.pre(/find/, function populate() {
   this.populate('subProjects')
+})
+
+ProjectSchema.pre('deleteOne', { document: true, query: false }, async function recursiveDelete() {
+  // @ts-expect-error subProjects exists on document
+  await this.subProjects.forEach((subproject) => subproject.deleteOne())
 })
 
 mongoose.model<ProjectType>('Project', ProjectSchema)

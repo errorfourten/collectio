@@ -19,9 +19,9 @@ const create: RequestHandler = async (req, res) => {
 
 const remove: RequestHandler = async (req, res) => {
   try {
-    service.deleteProject(req.params.id)
+    await service.deleteProject(req.params.id)
     res.status(204).send()
-  } catch {
+  } catch (error) {
     res.status(404).send()
   }
 }

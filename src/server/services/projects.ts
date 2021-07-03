@@ -15,23 +15,10 @@ const addProject = async (data: NewProjectType): Promise<ProjectType> => {
 }
 
 const deleteProject = async (id: string) => {
-  const project = await Project.findByIdAndDelete(id)
-  console.log(project)
+  const project = await Project.findById(id)
   if (!project) throw new Error(`Project ${id} does not exist`)
+  await project.deleteOne()
 }
-
-// const deleteProject = (toDeleteId: ProjectType['id']) => {
-//   // not the most efficient way since it doesn't return immediately when found
-//   projects = projects.filter(function recursiveFilter(project): boolean | number {
-//     if (project.subProjects) {
-//       project.subProjects = project.subProjects.filter(recursiveFilter)
-//     }
-//     if (project.id !== toDeleteId) return true
-//     return false
-//   })
-
-//   // if (!found) throw new Error(`Unable to find project ${toDeleteId}`)
-// }
 
 export default {
   allProjects,
