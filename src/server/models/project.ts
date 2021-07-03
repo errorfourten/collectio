@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import mongoose, { Schema, Model, Document } from 'mongoose'
+import mongoose, { Schema, Model } from 'mongoose'
 import { ProjectType } from '@util/types'
 
 const ProjectSchema = new Schema<ProjectType, Model<ProjectType>, ProjectType>({
@@ -8,23 +8,27 @@ const ProjectSchema = new Schema<ProjectType, Model<ProjectType>, ProjectType>({
     type: String,
     required: true
   },
-  top: {
-    type: Boolean,
-    default: false
-  },
-  subProjects: [{
+  parentProject: {
     type: Schema.Types.ObjectId,
     ref: 'Project'
-  }]
-}, { timestamps: true })
+  }
+}, {
+  timestamps: true,
+  toObject: { virtuals: true }
+})
+
+ProjectSchema.virtual('subProjects', {
+  ref: 'Project',
+  localField: '_id',
+  foreignField: 'parentProject'
+})
 
 ProjectSchema.set('toJSON', {
+  virtuals: true,
   versionKey: false,
-  transform: (_document: Document<ProjectType>, returnedObject: Document<ProjectType>) => {
-    if (returnedObject._id) returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    // @ts-expect-error Need to remove 'top' attribute
-    delete returnedObject.top
+  transform(_doc: ProjectType, ret: ProjectType) {
+    // @ts-expect-error _id gets automatically delcared by Mongoose and not in type
+    delete ret._id
   }
 })
 
