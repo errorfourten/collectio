@@ -32,7 +32,4 @@ ProjectSchema.pre('find', function populate() {
   this.populate('subProjects')
 })
 
-// Ensures that there will be no duplicate project
-ProjectSchema.index({ name: 1, subProjects: 1 }, { unique: true })
-
 mongoose.model<ProjectType>('Project', ProjectSchema)
