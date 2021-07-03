@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose'
+
 export interface Option {
   name: string,
   quantity: number
@@ -5,26 +7,28 @@ export interface Option {
 
 export interface Attribute {
   name: string,
-  options: Option[]
+  options?: Option[]
 }
 
 export interface Dataset {
   id: string,
   name: string,
-  dateCreated: Date,
   project?: string,
   description?: string,
   notes?: string,
-  attributes?: Attribute[]
+  attributes?: Attribute[],
+  dateCreated: Date,
 }
 
 export type DatasetRawData = Omit<Dataset, 'id' | 'dateCreated'>
 
-export type ProjectType = {
-  id: string,
+export interface ProjectType {
+  id: ObjectId,
   name: string,
-  dateCreated: Date,
-  subProjects?: ProjectType[]
+  subProjects: ProjectType[],
+  top: boolean,
+  createdAt: Date,
+  modifiedAt: Date
 }
 
 export type NewProjectType = {

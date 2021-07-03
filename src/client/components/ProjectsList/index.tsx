@@ -103,7 +103,7 @@ const ProjectsList = () => {
       <div>
         {
           projects.map((project) => {
-            if (project.subProjects) {
+            if (project.subProjects.length) {
               return (
                 <Menu.Item
                   key={`${project.id}-subProjects`}
@@ -156,7 +156,7 @@ const ProjectsList = () => {
     )
   }
 
-  const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects)
+  const subProjectExists = (project: ProjectType): project is SubPanelType => (!!project.subProjects.length)
 
   return (
     <div>
@@ -174,7 +174,7 @@ const ProjectsList = () => {
 
               {
                 projects.map((project) => (
-                  !project.subProjects && (
+                  !project.subProjects.length && (
                     <ContextMenuWrapper
                       key={project.id}
                       itemKey={project.id}

@@ -1,9 +1,13 @@
+/* eslint-disable no-console */
 /* eslint-disable import/first */
+
 import dotenv from 'dotenv'
 
 dotenv.config()
 import common from '@util/common'
 import { NextFunction, Request, Response } from 'express'
+import serverApp from '@root/server'
+import mongoose from 'mongoose'
 
 const { PORT, inProduction } = common
 
@@ -14,8 +18,15 @@ const path = require('path')
 require('express-async-errors')
 
 const app = express()
+app.use('/api', serverApp)
 
-app.use('/api', (req: Request, res: Response, next: NextFunction) => require('@root/server')(req, res, next)) // eslint-disable-line
+process.on('SIGINT', () => {
+  console.log('KeyboardInterrupt detected')
+  mongoose.connection.close()
+  console.log('Disconnected from MongoDB')
+  console.log('Exitting now...')
+  process.exit(130)
+})
 
 // Use hot loading in backend
 const watcher = chokidar.watch('src/server')
@@ -62,7 +73,6 @@ if (!inProduction) {
 }
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`Started on port ${PORT}`)
 })
 

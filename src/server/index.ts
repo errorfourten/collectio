@@ -1,8 +1,13 @@
-import routes from '@util/routes'
+/* eslint-disable no-console */
+/* eslint-disable import/first */
+
 import express from 'express'
-import errorMiddleware from '@middleware/errorMiddleware'
 import mongoose from 'mongoose'
 import common from '@util/common'
+
+// Initialises MongoDB schemas
+import '@models/dataset'
+import '@models/project'
 
 mongoose
   .connect(common.MONGODB_URI, {
@@ -15,10 +20,8 @@ mongoose
     console.error('Error connecting to MongoDB', error.message)
   })
 
-process.on('SIGINT', () => {
-  mongoose.connection.close()
-  console.log('Disconnected from MongoDB')
-})
+import routes from '@util/routes'
+import errorMiddleware from '@middleware/errorMiddleware'
 
 const app = express()
 
@@ -26,4 +29,4 @@ app.use(express.json())
 app.use(routes)
 app.use(errorMiddleware)
 
-module.exports = app
+export default app

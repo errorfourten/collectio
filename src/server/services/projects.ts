@@ -1,7 +1,7 @@
-/* eslint-disable no-param-reassign */
-import { v4 as uuid } from 'uuid'
 import { NewProjectType, ProjectType } from '@util/types'
+import mongoose from 'mongoose'
 
+/*
 let projects: Array<ProjectType> = [
   {
     id: '1779e45d-b740-4bc9-b57b-b62c06f51839',
@@ -69,59 +69,81 @@ let projects: Array<ProjectType> = [
     dateCreated: new Date(2021, 6, 20)
   }
 ]
+*/
+const Project = mongoose.model<ProjectType>('Project')
 
-const allProjects = () => (projects)
+const allProjects = async () => {
+  const projects = await Project.find({ top: true })
+  return projects
+}
 
-const addProject = (newProjectData: NewProjectType): ProjectType => {
-  const newProject = { id: uuid(), name: newProjectData.name, dateCreated: new Date() }
+const addProject = async (data: NewProjectType): Promise<ProjectType> => {
+  const project = new Project({ name: data.name })
 
-  const recursivelyAddToProjects = (toSearch: ProjectType[]): ProjectType | undefined => (
-    toSearch.find((project) => {
-      if (newProjectData.parentProject === project.id) {
-        if (project.subProjects) {
-          const nameExists = project.subProjects.find((project) => project.name === newProjectData.name)
-          if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists for parent project ${project.name}`)
-          project.subProjects.push(newProject)
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          project.subProjects = [newProject]
-        }
-        return true
-      }
-      if (project.subProjects) {
-        return recursivelyAddToProjects(project.subProjects)
-      }
-      return false
-    })
-  )
+  if (data.parentProject) {
+    const parentProject = await Project.findById(data.parentProject)
+    if (!parentProject) throw new Error(`Parent project ${data.parentProject} does not exist`)
 
-  if (newProjectData.parentProject) {
-    const found = recursivelyAddToProjects(projects)
-    if (!found) throw new Error(`Unable to find parentProject ${newProjectData.parentProject}`)
+    parentProject.subProjects.push(project._id)
+    parentProject.save()
   } else {
-    const nameExists = projects.find((project) => project.name === newProjectData.name)
-    if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists`)
-    projects.push(newProject)
+    project.top = true
   }
 
-  return newProject
+  const response = await project.save()
+  return response
 }
 
-const deleteProject = (toDeleteId: ProjectType['id']) => {
-  // not the most efficient way since it doesn't return immediately when found
-  projects = projects.filter(function recursiveFilter(project): boolean | number {
-    if (project.subProjects) {
-      project.subProjects = project.subProjects.filter(recursiveFilter)
-    }
-    if (project.id !== toDeleteId) return true
-    return false
-  })
+// const addProject = (newProjectData: NewProjectType): ProjectType => {
+//   const newProject = { id: uuid(), name: newProjectData.name, dateCreated: new Date() }
 
-  // if (!found) throw new Error(`Unable to find project ${toDeleteId}`)
-}
+//   const recursivelyAddToProjects = (toSearch: ProjectType[]): ProjectType | undefined => (
+//     toSearch.find((project) => {
+//       if (newProjectData.parentProject === project.id) {
+//         if (project.subProjects) {
+//           const nameExists = project.subProjects.find((project) => project.name === newProjectData.name)
+//           if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists for parent project ${project.name}`)
+//           project.subProjects.push(newProject)
+//         } else {
+//           // eslint-disable-next-line no-param-reassign
+//           project.subProjects = [newProject]
+//         }
+//         return true
+//       }
+//       if (project.subProjects) {
+//         return recursivelyAddToProjects(project.subProjects)
+//       }
+//       return false
+//     })
+//   )
+
+//   if (newProjectData.parentProject) {
+//     const found = recursivelyAddToProjects(projects)
+//     if (!found) throw new Error(`Unable to find parentProject ${newProjectData.parentProject}`)
+//   } else {
+//     const nameExists = projects.find((project) => project.name === newProjectData.name)
+//     if (nameExists) throw new Error(`Dataset name ${newProjectData.name} already exists`)
+//     projects.push(newProject)
+//   }
+
+//   return newProject
+// }
+
+// const deleteProject = (toDeleteId: ProjectType['id']) => {
+//   // not the most efficient way since it doesn't return immediately when found
+//   projects = projects.filter(function recursiveFilter(project): boolean | number {
+//     if (project.subProjects) {
+//       project.subProjects = project.subProjects.filter(recursiveFilter)
+//     }
+//     if (project.id !== toDeleteId) return true
+//     return false
+//   })
+
+//   // if (!found) throw new Error(`Unable to find project ${toDeleteId}`)
+// }
 
 export default {
   allProjects,
   addProject,
-  deleteProject
+  // deleteProject
 }
