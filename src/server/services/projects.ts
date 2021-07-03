@@ -20,8 +20,15 @@ const deleteProject = async (id: string) => {
   await project.deleteOne()
 }
 
+const updateProject = async (id: string, data: NewProjectType) => {
+  const project = await Project.findByIdAndUpdate(id, data, { new: true })
+  if (!project) throw new Error(`Project ${id} does not exist`)
+  return project
+}
+
 export default {
   allProjects,
   addProject,
-  deleteProject
+  deleteProject,
+  updateProject
 }

@@ -26,8 +26,19 @@ const remove: RequestHandler = async (req, res) => {
   }
 }
 
+const update: RequestHandler = async (req, res) => {
+  try {
+    const project = utils.toNewProject(req.body)
+    const updatedProject = await service.updateProject(req.params.id, project)
+    res.status(200).json(updatedProject)
+  } catch (error) {
+    res.status(404).send()
+  }
+}
+
 export default {
   getAll,
   create,
-  remove
+  remove,
+  update
 }

@@ -151,10 +151,11 @@ const parseProjectName = (name: unknown): string => {
   return name
 }
 
-const parseParentProject = (parentProject: unknown): string => {
+const parseParentProject = (parentProject: unknown): string | null => {
   if (!isString(parentProject)) {
     throw new Error(`Project parent ID ${parentProject} is not a string. Type is ${typeof parentProject}`)
   }
+  if (parentProject === '') return null
   return parentProject
 }
 
@@ -166,7 +167,7 @@ type ValidateNewProjectFields = {
 const toNewProject = ({ name, parentProject }: ValidateNewProjectFields): NewProjectType => (
   {
     name: parseProjectName(name),
-    ...(parentProject && { parentProject: parseParentProject(parentProject) }) as Record<string, unknown>
+    ...(parentProject !== undefined && { parentProject: parseParentProject(parentProject) }) as Record<string, unknown>
   }
 )
 
