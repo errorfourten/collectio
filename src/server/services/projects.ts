@@ -1,3 +1,4 @@
+import { NotFoundError } from '@util/errors'
 import { NewProjectType, ProjectType } from '@util/types'
 import mongoose from 'mongoose'
 
@@ -16,13 +17,13 @@ const addProject = async (data: NewProjectType): Promise<ProjectType> => {
 
 const deleteProject = async (id: string) => {
   const project = await Project.findById(id)
-  if (!project) throw new Error(`Project ${id} does not exist`)
+  if (!project) throw new NotFoundError(`Project ${id} does not exist`)
   await project.deleteOne()
 }
 
 const updateProject = async (id: string, data: NewProjectType) => {
   const project = await Project.findByIdAndUpdate(id, data, { new: true })
-  if (!project) throw new Error(`Project ${id} does not exist`)
+  if (!project) throw new NotFoundError(`Project ${id} does not exist`)
   return project
 }
 

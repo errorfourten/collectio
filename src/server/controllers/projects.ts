@@ -7,32 +7,32 @@ const getAll: RequestHandler = async (_req, res) => {
   res.json(projects)
 }
 
-const create: RequestHandler = async (req, res) => {
+const create: RequestHandler = async (req, res, next) => {
   try {
     const newProject = utils.toNewProject(req.body)
     const addedProject = await service.addProject(newProject)
     res.status(201).json(addedProject)
-  } catch (e) {
-    res.status(400).send(e.message)
+  } catch (error) {
+    next(error)
   }
 }
 
-const remove: RequestHandler = async (req, res) => {
+const remove: RequestHandler = async (req, res, next) => {
   try {
     await service.deleteProject(req.params.id)
     res.status(204).send()
   } catch (error) {
-    res.status(404).send()
+    next(error)
   }
 }
 
-const update: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (req, res, next) => {
   try {
     const project = utils.toNewProject(req.body)
     const updatedProject = await service.updateProject(req.params.id, project)
     res.status(200).json(updatedProject)
   } catch (error) {
-    res.status(404).send()
+    next(error)
   }
 }
 

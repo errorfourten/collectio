@@ -1,3 +1,4 @@
+import { UserInputError } from '@util/errors'
 import {
   Attribute, Dataset, DatasetRawData, NewProjectType, Option as DatasetOption
 } from '@util/types'
@@ -9,52 +10,52 @@ const isNumber = (digits: unknown): digits is number => typeof digits === 'numbe
 
 const parseUUID = (uuid: unknown): string => {
   if (!uuid) {
-    throw new Error('Missing dataset id')
+    throw new UserInputError('Missing dataset id')
   } else if (!isString(uuid)) {
-    throw new Error(`Dataset id ${uuid} is not a string. Type is ${typeof uuid}`)
+    throw new UserInputError(`Dataset id ${uuid} is not a string. Type is ${typeof uuid}`)
   } else if (!uuidValidate(uuid)) {
-    throw new Error(`Invalid UUID: ${uuid}`)
+    throw new UserInputError(`Invalid UUID: ${uuid}`)
   }
   return uuid
 }
 
 const parseDate = (date: unknown): Date => {
   if (!date) {
-    throw new Error('Missing dataset date')
+    throw new UserInputError('Missing dataset date')
   } else if (!isString(date)) {
-    throw new Error(`Dataset date ${date} is not a string. Type is ${typeof date}`)
+    throw new UserInputError(`Dataset date ${date} is not a string. Type is ${typeof date}`)
   } else if (Number.isNaN(Date.parse(date))) {
-    throw new Error(`Invalid date: ${date}`)
+    throw new UserInputError(`Invalid date: ${date}`)
   }
   return new Date(date)
 }
 
 const parseName = (name: unknown): string => {
   if (!name) {
-    throw new Error('Missing dataset name')
+    throw new UserInputError('Missing dataset name')
   } else if (!isString(name)) {
-    throw new Error(`Dataset name ${name} is not a string. Type is ${typeof name}`)
+    throw new UserInputError(`Dataset name ${name} is not a string. Type is ${typeof name}`)
   }
   return name
 }
 
 const parseDescription = (description: unknown): string => {
   if (!isString(description)) {
-    throw new Error(`Dataset description ${description} is not a string. Type is ${typeof description}`)
+    throw new UserInputError(`Dataset description ${description} is not a string. Type is ${typeof description}`)
   }
   return description
 }
 
 const parseNotes = (notes: unknown): string => {
   if (!isString(notes)) {
-    throw new Error(`Dataset notes ${notes} is not a string. Type if ${typeof notes}`)
+    throw new UserInputError(`Dataset notes ${notes} is not a string. Type if ${typeof notes}`)
   }
   return notes
 }
 
 const parseProject = (project: unknown): string => {
   if (!isString(project)) {
-    throw new Error(`Dataset project ${project} is not a string. Type is ${typeof project}`)
+    throw new UserInputError(`Dataset project ${project} is not a string. Type is ${typeof project}`)
   }
   return project
 }
@@ -63,20 +64,20 @@ type OptionProps = {name: unknown, quantity: unknown}
 
 const parseOption = ({ name, quantity }: OptionProps): DatasetOption => {
   if (!name) {
-    throw new Error('Option name is required')
+    throw new UserInputError('Option name is required')
   } else if (quantity === undefined) {
-    throw new Error('Option quantity is required')
+    throw new UserInputError('Option quantity is required')
   } else if (!isString(name)) {
-    throw new Error(`Option name ${name} is not a string. Type is ${typeof name}`)
+    throw new UserInputError(`Option name ${name} is not a string. Type is ${typeof name}`)
   } else if (!isNumber(quantity)) {
-    throw new Error(`Option quantity ${quantity} is not a number. Type is ${typeof quantity}`)
+    throw new UserInputError(`Option quantity ${quantity} is not a number. Type is ${typeof quantity}`)
   }
   return { name, quantity }
 }
 
 const parseOptions = (options: unknown): DatasetOption[] => {
   if (!(options instanceof Array)) {
-    throw new Error(`Options ${options} needs to be an array. Type is ${typeof options}`)
+    throw new UserInputError(`Options ${options} needs to be an array. Type is ${typeof options}`)
   }
   options.forEach((option: OptionProps) => {
     parseOption(option)
@@ -88,14 +89,14 @@ type AttributeProps = {name: unknown, options: unknown}
 
 const parseAttribute = ({ name, options }: AttributeProps): Attribute => {
   if (!isString(name)) {
-    throw new Error(`Attribute name ${name} is not a string. Type is ${typeof name}`)
+    throw new UserInputError(`Attribute name ${name} is not a string. Type is ${typeof name}`)
   }
   return { name, options: parseOptions(options) }
 }
 
 const parseAttributes = (attributes: unknown): Attribute[] => {
   if (!(attributes instanceof Array)) {
-    throw new Error(`Dataset attributes ${attributes} needs to be an array. Type is ${typeof attributes}`)
+    throw new UserInputError(`Dataset attributes ${attributes} needs to be an array. Type is ${typeof attributes}`)
   }
   attributes.forEach((attribute) => {
     parseAttribute(attribute)
@@ -144,16 +145,16 @@ const toDataset = ({
 
 const parseProjectName = (name: unknown): string => {
   if (!name) {
-    throw new Error('Missing project name')
+    throw new UserInputError('Missing project name')
   } else if (!isString(name)) {
-    throw new Error(`Project name ${name} is not a string. Type is ${typeof name}`)
+    throw new UserInputError(`Project name ${name} is not a string. Type is ${typeof name}`)
   }
   return name
 }
 
 const parseParentProject = (parentProject: unknown): string | null => {
   if (!isString(parentProject)) {
-    throw new Error(`Project parent ID ${parentProject} is not a string. Type is ${typeof parentProject}`)
+    throw new UserInputError(`Project parent ID ${parentProject} is not a string. Type is ${typeof parentProject}`)
   }
   if (parentProject === '') return null
   return parentProject
