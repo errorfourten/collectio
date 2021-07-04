@@ -65,7 +65,7 @@ const DatasetModal = ({ dataset }: {dataset: Dataset}) => {
           {dataset.description && <i>{dataset.description}</i>}
           <Header>Dataset Details</Header>
           <Header as="h4">Project</Header>
-          <p>{dataset.project}</p>
+          {dataset.project ? <p>{dataset.project.name}</p> : <p>No project</p>}
           {dataset.attributes && (
             <>
               <Header as="h4">Attributes</Header>

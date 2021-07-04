@@ -12,7 +12,13 @@ const EditDatasetModal = ({ originalValues }: {originalValues: Dataset}) => {
   const [open, setOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const { id, dateCreated, ...initialValues } = originalValues
+  const rawValues: DatasetRawData = {
+    name: originalValues.name,
+    project: originalValues.project?.id,
+    description: originalValues.description,
+    notes: originalValues.notes,
+    attributes: originalValues.attributes
+  }
 
   const mutation = useMutation(putDataset, {
     onSuccess: (data) => {
@@ -39,9 +45,8 @@ const EditDatasetModal = ({ originalValues }: {originalValues: Dataset}) => {
     }
   }
 
-  const submitAction = (values: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
-    const fullValues = { id, dateCreated, ...values } as Dataset
-    mutation.mutate(fullValues)
+  const submitAction = (dataset: DatasetRawData, setSubmitting: FormikHelpers<DatasetRawData>['setSubmitting']) => {
+    mutation.mutate({ id: originalValues.id, dataset })
     setSubmitting(false)
   }
 
@@ -66,7 +71,7 @@ const EditDatasetModal = ({ originalValues }: {originalValues: Dataset}) => {
       </Modal.Header>
       <Modal.Content>
         <DatasetForm
-          initialValues={initialValues}
+          initialValues={rawValues}
           errorMessage={errorMessage}
           formRef={formRef}
           submitAction={submitAction}

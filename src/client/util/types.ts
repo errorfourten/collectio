@@ -11,14 +11,20 @@ export interface Attribute {
 export interface Dataset {
   id: string,
   name: string,
-  dateCreated: string,
-  project?: string,
+  createdAt: string,
+  modifiedAt: string
+  project?: {
+    id: ProjectType['id'],
+    name: string
+  },
   description?: string,
   notes?: string,
   attributes?: Attribute[]
 }
 
-export type DatasetRawData = Omit<Dataset, 'id' | 'dateCreated'>
+export interface DatasetRawData extends Omit<Dataset, 'id' | 'createdAt' | 'modifiedAt' | 'project'> {
+  project?: string
+}
 
 export interface ProjectType {
   id: string,

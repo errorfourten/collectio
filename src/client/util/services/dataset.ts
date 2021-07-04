@@ -17,7 +17,12 @@ export const deleteDataset = async (id: Dataset['id']) => {
   await axios.delete(`${basePath}/${id}`)
 }
 
-export const putDataset = async (dataset: Dataset) => {
-  const response = await axios.put(`${basePath}/${dataset.id}`, dataset)
+type EditedDataset = {
+  id: Dataset['id'],
+  dataset: DatasetRawData
+}
+
+export const putDataset = async (props: EditedDataset) => {
+  const response = await axios.put(`${basePath}/${props.id}`, props.dataset)
   return response.data as Dataset
 }
