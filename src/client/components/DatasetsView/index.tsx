@@ -25,9 +25,17 @@ const DatasetsView = () => {
   return (
     <Container text>
       <AddDatasetModal />
-      {sortedDatasets.map((dataset) => (
-        <DatasetCard key={dataset.id} dataset={dataset} />
-      ))}
+      {
+        sortedDatasets.length
+          ? (
+            sortedDatasets.map((dataset) => (
+              <DatasetCard key={dataset.id} dataset={dataset} />
+            ))
+          )
+          : (
+            <Segment color="blue"><h3>Add your first dataset!</h3></Segment>
+          )
+      }
     </Container>
   )
 }
