@@ -51,7 +51,7 @@ DatasetSchema.set('toJSON', {
     // @ts-expect-error _id gets automatically delcared by Mongoose and not in type
     delete ret._id
     // @ts-expect-error subProjects exists
-    delete ret.project.subProjects
+    if (ret.project) delete ret.project.subProjects
   }
 })
 
