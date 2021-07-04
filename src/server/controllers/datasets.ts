@@ -3,71 +3,45 @@ import service from '@services/datasets'
 import utils from './utils'
 
 const getAll: RequestHandler = async (_req, res) => {
-  const datasets = service.allDatasets()
+  const datasets = await service.allDatasets()
   res.json(datasets)
 }
 
-const getOne: RequestHandler = async (req, res) => {
+const getOne: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = req.params
-    const dataset = service.findDataset(id)
-    if (dataset) {
-      res.json(dataset)
-    } else {
-      res.status(404).send('Dataset not found')
-    }
-  } catch (e) {
-    res.status(400).send(e.message)
+    const dataset = await service.oneDataset(req.params.id)
+    res.json(dataset)
+  } catch (error) {
+    next(error)
   }
 }
 
-const create: RequestHandler = async (req, res) => {
+const create: RequestHandler = async (req, res, next) => {
   try {
-    const newDataset = utils.toNewDataset(req.body)
-    const addedDataset = service.addDataset(newDataset)
+    const newDataset = utils.toDataset(req.body)
+    const addedDataset = await service.addDataset(newDataset)
     res.status(201).json(addedDataset)
-  } catch (e) {
-    res.status(400).send(e.message)
+  } catch (error) {
+    next(error)
   }
 }
 
-const remove: RequestHandler = async (req, res) => {
-  const { id } = req.params
-
+const remove: RequestHandler = async (req, res, next) => {
   try {
-    if (service.findDataset(id)) {
-      service.removeDataset(id)
-      res.status(204).send()
-    } else {
-      res.status(404).send()
-    }
-  } catch (e) {
-    res.status(400).send(e.message)
+    await service.deleteDataset(req.params.id)
+    res.status(204).send()
+  } catch (error) {
+    next(error)
   }
 }
 
-const edit: RequestHandler = async (req, res) => {
+const update: RequestHandler = async (req, res, next) => {
   try {
-    const { id } = req.params
-    if (!service.findDataset(id)) {
-      return res.status(404).send('Dataset not found')
-    }
-
-    let dataset = null
-    if (req.body.id === undefined) {
-      dataset = utils.toDataset({ ...req.body, id })
-    } else {
-      dataset = utils.toDataset(req.body)
-    }
-
-    if (dataset.id !== id) {
-      throw new Error(`ID in dataset ${dataset.id} is not the same as resource ID ${id}`)
-    }
-
-    service.editDataset(id, dataset)
-    return res.json(dataset)
-  } catch (e) {
-    return res.status(400).send(e.message)
+    const dataset = utils.toDataset(req.body)
+    const updatedDataset = await service.updateDataset(req.params.id, dataset)
+    res.json(updatedDataset)
+  } catch (error) {
+    next(error)
   }
 }
 
@@ -76,5 +50,5 @@ export default {
   getOne,
   create,
   remove,
-  edit
+  update
 }

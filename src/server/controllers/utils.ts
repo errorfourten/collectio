@@ -1,6 +1,6 @@
 import { UserInputError } from '@util/errors'
 import {
-  Attribute, Dataset, DatasetRawData, NewProjectType, Option as DatasetOption
+  Attribute, DatasetRawData, NewProjectType, Option as DatasetOption
 } from '@util/types'
 import { validate as uuidValidate } from 'uuid'
 
@@ -17,17 +17,6 @@ const parseUUID = (uuid: unknown): string => {
     throw new UserInputError(`Invalid UUID: ${uuid}`)
   }
   return uuid
-}
-
-const parseDate = (date: unknown): Date => {
-  if (!date) {
-    throw new UserInputError('Missing dataset date')
-  } else if (!isString(date)) {
-    throw new UserInputError(`Dataset date ${date} is not a string. Type is ${typeof date}`)
-  } else if (Number.isNaN(Date.parse(date))) {
-    throw new UserInputError(`Invalid date: ${date}`)
-  }
-  return new Date(date)
 }
 
 const parseName = (name: unknown): string => {
@@ -112,29 +101,10 @@ interface RawDatasetFields {
   attributes: unknown
 }
 
-const toNewDataset = ({
+const toDataset = ({
   name, project, description, notes, attributes
 }: RawDatasetFields): DatasetRawData => (
   {
-    name: parseName(name),
-    ...(description && { description: parseDescription(description) }) as Record<string, unknown>,
-    ...(notes && { notes: parseNotes(notes) }) as Record<string, unknown>,
-    ...(project && { project: parseProject(project) }) as Record<string, unknown>,
-    ...(attributes && { attributes: parseAttributes(attributes) }) as Record<string, unknown>
-  }
-)
-
-interface ValidateDatasetFields extends RawDatasetFields {
-  id: unknown,
-  dateCreated: unknown
-}
-
-const toDataset = ({
-  id, dateCreated, name, project, description, notes, attributes
-}: ValidateDatasetFields): Dataset => (
-  {
-    id: parseUUID(id),
-    dateCreated: parseDate(dateCreated),
     name: parseName(name),
     ...(description && { description: parseDescription(description) }) as Record<string, unknown>,
     ...(notes && { notes: parseNotes(notes) }) as Record<string, unknown>,
@@ -173,7 +143,6 @@ const toNewProject = ({ name, parentProject }: ValidateNewProjectFields): NewPro
 )
 
 export default {
-  toNewDataset,
   toDataset,
   toNewProject,
   parseUUID

@@ -8,7 +8,7 @@ router.get('/datasets', datasetsController.getAll)
 router.get('/datasets/:id', datasetsController.getOne)
 router.post('/datasets', datasetsController.create)
 router.delete('/datasets/:id', datasetsController.remove)
-router.put('/datasets/:id', datasetsController.edit)
+router.put('/datasets/:id', datasetsController.update)
 
 router.get('/projects', projectsController.getAll)
 router.get('/projects/:id', projectsController.getOne)
