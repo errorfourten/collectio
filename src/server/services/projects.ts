@@ -15,7 +15,7 @@ const oneProject = async (id: string) => {
   return project
 }
 
-const addProject = async (data: NewProjectType): Promise<ProjectType> => {
+const addProject = async (data: NewProjectType) => {
   const project = new Project({ name: data.name, parentProject: data.parentProject })
   const response = await project.save()
   return response
