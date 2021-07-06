@@ -1,6 +1,6 @@
 import { UserInputError } from '@util/errors'
 import {
-  Attribute, DatasetRawData, NewProjectType, Option as DatasetOption
+  Attribute, DatasetRawData, NewProjectType, Option as DatasetOption, ProjectType
 } from '@util/types'
 import { validate as uuidValidate } from 'uuid'
 
@@ -142,8 +142,27 @@ const toNewProject = ({ name, parentProject }: ValidateNewProjectFields): NewPro
   }
 )
 
+interface ProjectWithSubProjects extends Omit<ProjectType, 'parentProject'> {
+  subProjects?: ProjectWithSubProjects[]
+}
+
+const getAllSubProjects = (project: ProjectWithSubProjects) => {
+  const subProjects: string[] = []
+
+  const getNestedProjects = (project: ProjectWithSubProjects) => {
+    subProjects.push(project.id)
+    if (project.subProjects) {
+      project.subProjects.forEach((subProject) => getNestedProjects(subProject))
+    }
+  }
+
+  getNestedProjects(project)
+  return subProjects
+}
+
 export default {
   toDataset,
   toNewProject,
+  getAllSubProjects,
   parseUUID
 }

@@ -1,4 +1,5 @@
 import service from '@services/projects'
+import datasetService from '@services/datasets'
 import { RequestHandler } from 'express'
 import utils from '@controllers/utils'
 
@@ -28,6 +29,10 @@ const create: RequestHandler = async (req, res, next) => {
 
 const remove: RequestHandler = async (req, res, next) => {
   try {
+    const project = await service.oneProject(req.params.id)
+    const allSubProjects = utils.getAllSubProjects(project)
+    await datasetService.deleteDatasetByFilter({ project: { $in: allSubProjects } })
+
     await service.deleteProject(req.params.id)
     res.status(204).send()
   } catch (error) {

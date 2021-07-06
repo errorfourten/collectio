@@ -23,6 +23,7 @@ const DeleteProjectModal = ({
   const mutation = useMutation(deleteProject, {
     onSuccess: () => {
       queryClient.invalidateQueries('projects')
+      queryClient.invalidateQueries('datasets')
       setOpen(false)
     },
     onError: (error: AxiosError) => {

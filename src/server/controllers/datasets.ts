@@ -9,7 +9,7 @@ const getAll: RequestHandler = async (_req, res) => {
 
 const getOne: RequestHandler = async (req, res, next) => {
   try {
-    const dataset = await service.oneDataset(req.params.id)
+    const dataset = await service.oneDatasetById(req.params.id)
     res.json(dataset)
   } catch (error) {
     next(error)
@@ -28,7 +28,7 @@ const create: RequestHandler = async (req, res, next) => {
 
 const remove: RequestHandler = async (req, res, next) => {
   try {
-    await service.deleteDataset(req.params.id)
+    await service.deleteDatasetById(req.params.id)
     res.status(204).send()
   } catch (error) {
     next(error)

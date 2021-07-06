@@ -9,10 +9,15 @@ const allDatasets = async () => {
   return datasets
 }
 
-const oneDataset = async (id: Dataset['id']) => {
+const oneDatasetById = async (id: Dataset['id']) => {
   const dataset = await Dataset.findById(id)
   if (!dataset) throw new NotFoundError(`Dataset ${id} does not exist`)
   return dataset
+}
+
+const filteredDatasets = async (filter: Record<string, unknown>) => {
+  const datasets = await Dataset.find(filter)
+  return datasets
 }
 
 const addDataset = async (data: DatasetRawData) => {
@@ -21,9 +26,14 @@ const addDataset = async (data: DatasetRawData) => {
   return response
 }
 
-const deleteDataset = async (id: Dataset['id']) => {
+const deleteDatasetById = async (id: Dataset['id']) => {
   const response = await Dataset.findByIdAndDelete(id)
   if (!response) throw new NotFoundError(`Dataset ${id} does not exist`)
+}
+
+const deleteDatasetByFilter = async (filter: Record<string, unknown>) => {
+  const response = await Dataset.deleteMany(filter)
+  return response
 }
 
 const updateDataset = async (id: string, data: DatasetRawData) => {
@@ -34,8 +44,10 @@ const updateDataset = async (id: string, data: DatasetRawData) => {
 
 export default {
   allDatasets,
-  oneDataset,
+  oneDatasetById,
+  filteredDatasets,
   addDataset,
-  deleteDataset,
+  deleteDatasetById,
+  deleteDatasetByFilter,
   updateDataset
 }
