@@ -29,7 +29,7 @@ const AddDatasetModal = () => {
       setOpen(false)
     },
     onError: (error: AxiosError) => {
-      if (error.response) { setErrorMessage(error.response.data) }
+      if (error.response) { setErrorMessage(error.response.data.error) }
     }
   })
 

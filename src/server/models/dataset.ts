@@ -44,6 +44,8 @@ const DatasetSchema = new Schema<Dataset, Model<Dataset>, Dataset>({
   }
 }, { timestamps: true })
 
+DatasetSchema.index({ name: 1, project: 1 }, { unique: true })
+
 DatasetSchema.set('toJSON', {
   getters: true,
   versionKey: false,
@@ -57,6 +59,15 @@ DatasetSchema.set('toJSON', {
 
 DatasetSchema.pre(/find/i, function populate() {
   this.populate('project', 'name')
+})
+
+// eslint-disable-next-line prefer-arrow-callback, @typescript-eslint/no-explicit-any
+DatasetSchema.post('save', function errorHandling(error: any, _doc: Dataset, next: (error?: Error) => void) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('Dataset name is a duplicate for the same project'))
+  } else {
+    next()
+  }
 })
 
 mongoose.model('Dataset', DatasetSchema)
