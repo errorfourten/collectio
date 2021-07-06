@@ -23,7 +23,7 @@ const AddProjectModal = () => {
       setOpen(false)
     },
     onError: (error: AxiosError) => {
-      if (error.response) { setErrorMessage(error.response.data) }
+      if (error.response) { setErrorMessage(error.response.data.error) }
     }
   })
 
@@ -57,8 +57,8 @@ const AddProjectModal = () => {
         tabIndex={0}
         aria-label="Close Modal"
         className="close inside icon"
-        onClick={() => setOpen(false)}
-        onKeyDown={() => setOpen(false)}
+        onClick={handleClose}
+        onKeyDown={handleClose}
       />
       <Modal.Header>
         New Project
