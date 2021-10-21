@@ -1,7 +1,10 @@
 /* eslint-disable no-param-reassign */
 
 import mongoose, { Schema, Model } from 'mongoose'
-import { Option, Attribute, Dataset } from '@util/types'
+import {
+  Option, Attribute, Dataset, ProjectType
+} from '@util/types'
+import { UserInputError } from '@util/errors'
 
 const OptionSchema = new Schema<Option, Model<Option>, Option>({
   name: {
@@ -64,10 +67,21 @@ DatasetSchema.pre(/find/i, function populate() {
 // eslint-disable-next-line prefer-arrow-callback, @typescript-eslint/no-explicit-any
 DatasetSchema.post('save', function errorHandling(error: any, _doc: Dataset, next: (error?: Error) => void) {
   if (error.name === 'MongoError' && error.code === 11000) {
-    next(new Error('Dataset name is a duplicate for the same project'))
+    next(new UserInputError('Dataset name is a duplicate for the same project'))
   } else {
     next()
   }
 })
+
+DatasetSchema.path('project').validate(async (v: Dataset['project']) => {
+  const Project = mongoose.model<ProjectType>('Project')
+
+  const project = await Project.findById(v)
+  if (!project) {
+    throw new Error('Project ID does not exist')
+  }
+
+  return true
+}, 'Project `{VALUE}` is not valid')
 
 mongoose.model('Dataset', DatasetSchema)

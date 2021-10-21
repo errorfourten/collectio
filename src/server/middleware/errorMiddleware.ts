@@ -14,6 +14,9 @@ const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
     case 'UserInputError': {
       return res.status(400).send({ error: error.message })
     }
+    case 'ValidationError': {
+      return res.status(400).send({ error: error.message })
+    }
     default: res.status(500).send({ error: error.message })
   }
 
