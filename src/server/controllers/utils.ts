@@ -8,6 +8,8 @@ const isString = (text: unknown): text is string => typeof text === 'string' || 
 
 const isNumber = (digits: unknown): digits is number => typeof digits === 'number' || digits instanceof Number
 
+const isObject = (item: unknown): item is Record<string, unknown> => typeof item === 'object' || item instanceof Object
+
 const parseUUID = (uuid: unknown): string => {
   if (!uuid) {
     throw new UserInputError('Missing dataset id')
@@ -43,6 +45,12 @@ const parseNotes = (notes: unknown): string => {
 }
 
 const parseProject = (project: unknown): string => {
+  if (isObject(project)) {
+    if (project.id && isString(project.id)) {
+      return project.id
+    }
+  }
+
   if (!isString(project)) {
     throw new UserInputError(`Dataset project ${project} is not a string. Type is ${typeof project}`)
   }

@@ -1,8 +1,10 @@
 import { ErrorRequestHandler } from 'express'
 
 const errorHandler: ErrorRequestHandler = (error, _req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.error(error.message, error.name, error.extra)
+  if (process.env.NODE_ENV !== 'testing') {
+    // eslint-disable-next-line no-console
+    console.error(error.message, error.name, error.extra)
+  }
 
   switch (error.name) {
     case 'CastError': {

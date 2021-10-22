@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express'
 import service from '@services/datasets'
+import { UserInputError } from '@util/errors'
 import utils from './utils'
 
 const getAll: RequestHandler = async (_req, res) => {
@@ -38,6 +39,11 @@ const remove: RequestHandler = async (req, res, next) => {
 const update: RequestHandler = async (req, res, next) => {
   try {
     const dataset = utils.toDataset(req.body)
+
+    if (req.body.id && req.body.id !== req.params.id) {
+      throw new UserInputError('URL ID and object ID do not match.')
+    }
+
     const updatedDataset = await service.updateDataset(req.params.id, dataset)
     res.json(updatedDataset)
   } catch (error) {

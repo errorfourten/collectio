@@ -1,11 +1,18 @@
 import { Dataset, DatasetRawData } from '@util/types'
 import supertest from 'supertest'
-
-const app = require('../index')
+import mongoose from 'mongoose'
+import app from '../index'
+import testHelpers from './testHelpers'
 
 const api = supertest(app)
 
-// Currently does not set up any database for testing. Will do once we use PostGres as DB.
+beforeEach(async () => {
+  await testHelpers.resetDatasets()
+})
+
+afterAll(() => {
+  mongoose.connection.close()
+})
 
 describe('Datasets', () => {
   describe('GET', () => {
@@ -28,8 +35,9 @@ describe('Datasets', () => {
     })
 
     test('Fails with 404 on invalid ID', async () => {
+      const id = await testHelpers.notExistingId()
       await api
-        .get('/datasets/non-existing-id')
+        .get(`/datasets/${id}`)
         .expect(404)
     })
   })
@@ -40,7 +48,6 @@ describe('Datasets', () => {
 
       const newDataset: DatasetRawData = {
         name: 'test dataset',
-        project: 'test project',
         description: 'test description',
         notes: 'test notes',
         attributes: [
@@ -66,7 +73,7 @@ describe('Datasets', () => {
       const afterDatasets = await api.get('/datasets')
 
       expect(resultDataset.body).toHaveProperty('id')
-      expect(resultDataset.body).toHaveProperty('dateCreated')
+      expect(resultDataset.body).toHaveProperty('createdAt')
       expect(resultDataset.body).toMatchObject(newDataset)
       expect(afterDatasets.body.length).toEqual(initialDatasets.body.length + 1)
     })
@@ -101,9 +108,10 @@ describe('Datasets', () => {
 
     test('Fails with 404 if ID does not exist', async () => {
       const initialDatasets = await api.get('/datasets')
+      const id = await testHelpers.notExistingId()
 
       await api
-        .delete('/datasets/non-existing-id')
+        .delete(`/datasets/${id}`)
         .expect(404)
 
       const afterDatasets = await api.get('/datasets')
@@ -118,7 +126,6 @@ describe('Datasets', () => {
 
       const editedDataset = { ...datasetToEdit }
       editedDataset.name = 'edited name'
-      editedDataset.project = 'edited project'
       editedDataset.notes = 'edited notes'
 
       await api
@@ -129,7 +136,7 @@ describe('Datasets', () => {
         .expect('Content-Type', /application\/json/)
 
       const afterDataset = await api.get(`/datasets/${datasetToEdit.id}`)
-      expect(afterDataset.body).toEqual(editedDataset)
+      expect(afterDataset.body).toEqual({ ...editedDataset, updatedAt: expect.any(String) })
     })
 
     test('Succeeds without ID in request body', async () => {
@@ -139,7 +146,6 @@ describe('Datasets', () => {
       const editedDataset = { ...datasetToEdit }
       delete editedDataset.id
       editedDataset.name = 'edited name'
-      editedDataset.project = 'edited project'
       editedDataset.notes = 'edited notes'
 
       await api
@@ -160,7 +166,6 @@ describe('Datasets', () => {
       const editedDataset = { ...datasetToEdit }
       editedDataset.id = 'WRONG ID'
       editedDataset.name = 'edited name'
-      editedDataset.project = 'edited project'
       editedDataset.notes = 'edited notes'
 
       await api
@@ -175,10 +180,11 @@ describe('Datasets', () => {
 
     test('Fails with 404 if request url is not found', async () => {
       const initialDatasets = await api.get('/datasets')
-      const datasetToEdit = initialDatasets.body[0]
+      const { id, ...datasetToEdit } = initialDatasets.body[0]
+      const nonExistentId = await testHelpers.notExistingId()
 
       await api
-        .put('/datasets/non-existing-id')
+        .put(`/datasets/${nonExistentId}`)
         .send(datasetToEdit)
         .set('Content-Type', 'application/json')
         .expect(404)
@@ -186,8 +192,7 @@ describe('Datasets', () => {
 
     test('Fails with 400 if necessary attribute is missing from body', async () => {
       const initialDatasets = await api.get('/datasets')
-      const datasetToEdit = initialDatasets.body[0]
-      delete datasetToEdit.name
+      const { name, ...datasetToEdit } = initialDatasets.body[0]
 
       await api
         .put(`/datasets/${datasetToEdit.id}`)
