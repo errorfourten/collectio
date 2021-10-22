@@ -9,8 +9,8 @@
     "build": "webpack --mode=production --config src/webpack.config.ts",
     "tsc": "tsc && tsc-alias",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "test:ui": "jest src/client --verbose --runInBand --env=jest-environment-jsdom",
-    "test:server": "jest src/server --verbose --runInBand --env=node"
+    "test:ui": "jest src/client --runInBand --config src/client/tests/jest.config.ts",
+    "test:server": "cross-env NODE_ENV=testing jest src/server --runInBand --config src/server/tests/jest.config.ts"
   },
   "repository": {
     "type": "git",
@@ -95,28 +95,6 @@
     "webpack-cli": "^4.7.0",
     "webpack-dev-middleware": "^4.3.0",
     "webpack-hot-middleware": "^2.25.0"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "globals": {
-      "ts-jest": {
-        "isolatedModules": true
-      }
-    },
-    "setupFilesAfterEnv": [
-      "@testing-library/jest-dom/extend-expect",
-      "<rootDir>/src/client/tests/mock-server.ts"
-    ],
-    "moduleNameMapper": {
-      "^@controllers/(.*)$": "<rootDir>/src/server/controllers/$1",
-      "^@middleware/(.*)$": "<rootDir>/src/server/middleware/$1",
-      "^@util/(.*)$": "<rootDir>/src/server/util/$1",
-      "^@services/(.*)$": "<rootDir>/src/server/services/$1",
-      "^@models/(.*)$": "<rootDir>/src/server/models/$1",
-      "^Components/(.*)$": "<rootDir>/src/client/components/$1",
-      "^Utilities/(.*)$": "<rootDir>/src/client/util/$1",
-      "^Assets/(.*)$": "<rootDir>/src/client/assets/$1"
-    }
   },
   "_moduleAliases": {
     "@root": "./src",
