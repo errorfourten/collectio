@@ -16,17 +16,17 @@ export interface Dataset {
   notes?: string,
   attributes?: Attribute[],
   createdAt: Date,
-  modifiedAt: Date
+  updatedAt: Date
 }
 
-export type DatasetRawData = Omit<Dataset, 'id' | 'createdAt' | 'modifiedAt'>
+export type DatasetRawData = Omit<Dataset, 'id' | 'createdAt' | 'updatedAt'>
 
 export interface ProjectType {
   id: string,
   name: string,
   parentProject?: ProjectType['id']
   createdAt: Date,
-  modifiedAt: Date
+  updatedAt: Date
 }
 
 export type NewProjectType = {
