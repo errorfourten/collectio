@@ -1,10 +1,11 @@
-import { Dataset } from '@util/types'
+import type { Dataset } from '@util/types'
 
 const data: Dataset[] = [
   {
     id: 'ce01c3be-648a-4bc4-b6ad-62e8e84aa91e',
     name: 'Very cool dataset',
-    dateCreated: new Date(2020, 11, 24, 10, 33, 30, 0),
+    createdAt: new Date(2020, 11, 24, 10, 33, 30, 0),
+    updatedAt: new Date(2020, 11, 24, 10, 33, 30, 0),
     project: 'basic',
     description: 'This is the best dataset ever created',
     notes: 'Need to take note of what is constitutes as cool',
@@ -43,7 +44,8 @@ const data: Dataset[] = [
   {
     id: '459ed74c-0b1a-4db6-a852-c0dd602e55e7',
     name: 'Another dataset',
-    dateCreated: new Date(2020, 12, 2, 20, 0, 0, 0),
+    createdAt: new Date(2020, 12, 2, 20, 0, 0, 0),
+    updatedAt: new Date(2020, 12, 2, 20, 0, 0, 0),
     project: 'basic',
     description: 'Just another generic one',
     attributes: [
@@ -81,7 +83,8 @@ const data: Dataset[] = [
   {
     id: '2394ca32-8d0e-4e05-919b-6ffc83ffe804',
     name: 'Big dataset',
-    dateCreated: new Date(2021, 1, 5, 0, 0, 0, 0),
+    createdAt: new Date(2021, 1, 5, 0, 0, 0, 0),
+    updatedAt: new Date(2021, 1, 5, 0, 0, 0, 0),
     project: 'basic',
     notes: 'Gigantic dataset needs a lot of data',
     attributes: [
@@ -119,7 +122,8 @@ const data: Dataset[] = [
   {
     id: 'ec07515b-3202-47c5-9a4b-965fce23d44b',
     name: 'A new beginning',
-    dateCreated: new Date(2020, 4, 2),
+    createdAt: new Date(2020, 4, 2),
+    updatedAt: new Date(2020, 4, 2),
     project: 'complex',
     attributes: [
       {
@@ -156,7 +160,8 @@ const data: Dataset[] = [
   {
     id: '3c8bcb95-17ec-4f2e-b16f-d435fdaf0ddf',
     name: 'This is the end',
-    dateCreated: new Date(2020, 5, 2),
+    createdAt: new Date(2020, 5, 2),
+    updatedAt: new Date(2020, 5, 2),
     project: 'complex',
     description: 'Last ever dataset?',
     attributes: [

@@ -15,10 +15,11 @@ const handlers = [
     try {
       if (req.body) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const dataset = utils.toNewDataset(req.body as any)
+        const dataset = utils.toDataset(req.body as any)
         const newDataset = {
           id: uuid(),
-          dateCreated: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
           ...dataset
         }
         mockData.push(newDataset)

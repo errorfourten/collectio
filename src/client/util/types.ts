@@ -12,7 +12,7 @@ export interface Dataset {
   id: string,
   name: string,
   createdAt: string,
-  modifiedAt: string
+  updatedAt: string
   project?: {
     id: ProjectType['id'],
     name: string
@@ -22,7 +22,7 @@ export interface Dataset {
   attributes?: Attribute[]
 }
 
-export interface DatasetRawData extends Omit<Dataset, 'id' | 'createdAt' | 'modifiedAt' | 'project'> {
+export interface DatasetRawData extends Omit<Dataset, 'id' | 'createdAt' | 'updatedAt' | 'project'> {
   project?: string
 }
 
@@ -30,7 +30,7 @@ export interface ProjectType {
   id: string,
   name: string,
   createdAt: string,
-  modifiedAt: string,
+  updatedAt: string,
   subProjects: ProjectType[]
 }
 
