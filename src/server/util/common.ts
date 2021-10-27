@@ -9,10 +9,16 @@ const getMongoDBURI = () => {
     }
     return process.env.MONGO_PROD_DB
   }
-  if (!process.env.MONGO_TEST_DB) {
-    throw new Error('Testing requires environment variable MONGO_TEST_DB to be set!')
+  if (process.env.NODE_ENV === 'testing') {
+    if (!process.env.MONGO_TEST_DB) {
+      throw new Error('Testing requires environment variable MONGO_TEST_DB to be set!')
+    }
+    return process.env.MONGO_TEST_DB
   }
-  return process.env.MONGO_TEST_DB
+  if (!process.env.MONGO_DEV_DB) {
+    throw new Error('Development requires environment variable MONGO_DEV_DB to be set!')
+  }
+  return process.env.MONGO_DEV_DB
 }
 const MONGODB_URI = getMongoDBURI()
 

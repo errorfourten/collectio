@@ -5,7 +5,7 @@ export interface Option {
 
 export interface Attribute {
   name: string,
-  options?: Option[]
+  options: Option[]
 }
 
 export interface Dataset {
